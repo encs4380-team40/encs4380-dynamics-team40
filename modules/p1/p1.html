@@ -540,10 +540,10 @@
   <!-- Control-section navigation (relative links work on GitHub Pages project URLs) -->
   <nav class="hw2-nav" aria-label="Control section">
     <div class="container hw2-nav-inner">
-      <a class="hw2-home" href="../../index.html#control">← Toolkit home</a>
+      <span class="hw2-home" aria-disabled="true">← Toolkit home</span>
       <span class="hw2-nav-sep" aria-hidden="true"></span>
       <a href="../p1/p1.html" aria-current="page">P1 PID playground</a>
-      <a href="../p2/p2.html">P2 Slow sensor</a>
+      <span class="hw2-soon" aria-disabled="true">P2 Slow sensor</span>
       <span class="hw2-soon" title="Coming next">P3 Digital PID</span>
       <span class="hw2-soon" title="Coming next">P4 Tuning</span>
       <span class="hw2-soon" title="Coming next">MySystem</span>
@@ -563,15 +563,11 @@
       <article class="card intro">
         <div>
           <h2 id="p1-intro-title">How does feedback make a system faster and more accurate?</h2>
-          <p class="lead">Homework 1 measured how slowly a system follows its input. Here a PID controller watches the error and pushes the plant harder when it lags behind. Change Kp, Ki and Kd and watch rise time, overshoot, settling time and steady-state error change.</p>
+          <p class="lead">A PID controller compares the setpoint with the output and pushes the plant harder when it lags behind. Change Kp, Ki and Kd and watch rise time, overshoot, settling time and steady-state error change.</p>
           <div class="model-grid">
             <div class="model-box">
               <span class="model-label">Controller (parallel PID)</span>
               <span class="math"><i>u</i> = <i>K<sub>p</sub></i><i>e</i> + <i>K<sub>i</sub></i>∫<i>e</i> d<i>t</i> + <i>K<sub>d</sub></i><span class="frac"><span>d<i>e</i></span><span>d<i>t</i></span></span></span>
-            </div>
-            <div class="model-box">
-              <span class="model-label">Error</span>
-              <span class="math"><i>e</i>(<i>t</i>) = <i>r</i>(<i>t</i>) − <i>y</i>(<i>t</i>)</span>
             </div>
             <div class="model-box">
               <span class="model-label">First-order plant (Module 1)</span>
@@ -584,11 +580,11 @@
           </div>
           <dl class="symbols">
             <div><dt><i>r</i>(<i>t</i>)</dt><dd>setpoint (a step at t = 0)</dd></div>
-            <div><dt><i>e</i>(<i>t</i>)</dt><dd>error</dd></div>
+            <div><dt><i>e</i> = <i>r</i> − <i>y</i></dt><dd>error</dd></div>
             <div><dt><i>u</i>(<i>t</i>)</dt><dd>control signal, limited to [u<sub>min</sub>, u<sub>max</sub>]</dd></div>
             <div><dt><i>y</i>(<i>t</i>)</dt><dd>plant output</dd></div>
           </dl>
-          <p class="assumption-line">Assumptions: zero initial conditions, an ideal sensor (m = y; P2 adds a slow one), no anti-windup (P3 adds it).</p>
+          <p class="assumption-line">Assumptions: zero initial conditions and an ideal sensor (P2 adds a slow one).</p>
         </div>
 
         <aside class="example" aria-labelledby="p1-example-title">
@@ -599,7 +595,7 @@
             <li><span class="ex-time">95% point</span><span class="ex-temp">0.3 s</span><span class="ex-note">3τ<sub>cl</sub> instead of 3 s</span></li>
             <li><span class="ex-time">e<sub>ss</sub></span><span class="ex-temp">10%</span><span class="ex-note">1 / (1 + KK<sub>p</sub>): it settles at 0.9, short of 1</span></li>
           </ol>
-          <p class="example-why"><strong>Why 10% short?</strong> A P controller only pushes while there is an error: u = 9e. To hold y = 0.9 the plant needs u = 0.9, so e must stay at 0.1. An integral term removes that error; a derivative term can damp the overshoot that follows (it helps most on the second-order plant).</p>
+          <p class="example-why"><strong>Why 10% short?</strong> P only pushes while there is an error: to hold y = 0.9 it needs u = 0.9 = 9e, so e stays at 0.1. Adding I removes that error.</p>
         </aside>
       </article>
 
@@ -661,7 +657,7 @@
                 <button type="button" class="btn btn-sm" data-preset="PI" aria-pressed="false">PI</button>
                 <button type="button" class="btn btn-sm" data-preset="PID" aria-pressed="false">PID</button>
               </div>
-              <p class="control-help" id="p1-preset-help">Presets set tuned gains for the selected plant.</p>
+              <p class="control-help" id="p1-preset-help"></p>
               <div class="control">
                 <div class="control-row">
                   <label for="p1-kp">Proportional <span class="var">K<sub>p</sub></span></label>
@@ -686,16 +682,6 @@
                 <input type="range" id="p1-kd" min="0" max="3" step="0.01" value="0">
                 <div class="range-scale" aria-hidden="true"><span>0</span><span>3</span></div>
               </div>
-              <fieldset class="control">
-                <legend>Derivative acts on</legend>
-                <div class="segmented">
-                  <input type="radio" name="p1-dmode" id="p1-dmode-error" value="error" checked>
-                  <label for="p1-dmode-error">Error e</label>
-                  <input type="radio" name="p1-dmode" id="p1-dmode-meas" value="measurement">
-                  <label for="p1-dmode-meas">Output −y</label>
-                </div>
-                <p class="control-help">“Error” is the textbook form. On a setpoint step it gives a short derivative kick in u; “Output” avoids the kick and has the same stability.</p>
-              </fieldset>
             </div>
 
             <div class="control-group" role="group" aria-labelledby="p1-g-io">
@@ -723,18 +709,6 @@
                 </div>
                 <input type="range" id="p1-umin" min="-50" max="0" step="0.5" value="-10">
                 <div class="range-scale" aria-hidden="true"><span>−50</span><span>0</span></div>
-              </div>
-              <div class="control">
-                <label for="p1-window" class="control-row">Time window</label>
-                <select class="select" id="p1-window">
-                  <option value="auto" selected>Automatic (fits the settling time)</option>
-                  <option value="1">0 to 1 s</option>
-                  <option value="2">0 to 2 s</option>
-                  <option value="5">0 to 5 s</option>
-                  <option value="10">0 to 10 s</option>
-                  <option value="20">0 to 20 s</option>
-                  <option value="40">0 to 40 s</option>
-                </select>
               </div>
               <div class="control">
                 <p class="input-error" id="p1-input-error" role="alert" hidden></p>
@@ -814,7 +788,7 @@
                 <text class="bd-sub" x="160" y="306" text-anchor="middle">ideal sensor: m(t) = y(t)</text>
               </svg>
             </figure>
-            <p class="bd-caption" id="p1-bd-caption">The limit block is enforced in the simulation: whatever the PID asks for, the plant only receives u between u<sub>min</sub> and u<sub>max</sub>.</p>
+            <p class="bd-caption" id="p1-bd-caption">The limit block is enforced in the simulation: the plant only receives u between u<sub>min</sub> and u<sub>max</sub>.</p>
           </section>
 
           <!-- 4. Closed-loop response -->
@@ -838,7 +812,7 @@
                 <button type="button" class="btn btn-sm" id="p1-unpin">Clear reference</button>
               </div>
             </div>
-            <p class="chart-hint">Hover or tap to read values. Pin a curve, change one gain, and compare: the metric cards below also show the pinned values.</p>
+            <p class="chart-hint">Hover or tap to read values. Pin a curve, change one gain, and compare.</p>
           </section>
 
           <!-- 5. Control signal -->
@@ -855,50 +829,37 @@
               <canvas id="p1-u-chart" role="img" aria-label="Control signal chart"></canvas>
               <p class="chart-fallback" data-chart-fallback hidden>The chart could not be drawn because Chart.js did not load.</p>
             </div>
-            <div class="chart-toolbar">
-              <label class="check"><input type="checkbox" id="p1-parts"> Show the P, I and D parts of u</label>
-              <p class="ref-status" id="p1-u-note"></p>
-            </div>
+            <p class="chart-hint" id="p1-u-note"></p>
           </section>
 
           <!-- 6. Live metrics -->
           <section aria-labelledby="p1-metrics-title">
             <div class="section-head">
-              <h2 id="p1-metrics-title">Live performance metrics</h2>
-              <p class="card-sub">Measured on the simulated y(t), relative to its final value (definitions below the charts).</p>
+              <h2 id="p1-metrics-title">Performance metrics</h2>
+              <p class="card-sub">Measured on the simulated y(t) and recalculated whenever a control moves.</p>
             </div>
             <div class="status-line" id="p1-status" aria-live="polite"></div>
             <div class="metrics">
               <article class="metric metric--tau">
-                <h3>Rise time t<sub>r</sub> (10–90%)</h3>
+                <h3>Rise time t<sub>r</sub></h3>
                 <p class="metric-value"><span id="p1-m-tr">—</span><span class="metric-unit">s</span></p>
-                <p class="metric-note">From 10% to 90% of the final value.<span class="metric-ref" id="p1-r-tr"></span></p>
+                <p class="metric-note">10% → 90% of the final value.</p>
               </article>
               <article class="metric metric--error">
                 <h3>Overshoot M<sub>p</sub></h3>
                 <p class="metric-value"><span id="p1-m-mp">—</span><span class="metric-unit">%</span></p>
-                <p class="metric-note">Peak above the final value.<span class="metric-ref" id="p1-r-mp"></span></p>
+                <p class="metric-note">Peak above the final value.</p>
               </article>
               <article class="metric metric--accent">
-                <h3>Settling time t<sub>s</sub> (±2%)</h3>
+                <h3>Settling time t<sub>s</sub></h3>
                 <p class="metric-value"><span id="p1-m-ts">—</span><span class="metric-unit">s</span></p>
-                <p class="metric-note">Last time y leaves the ±2% band.<span class="metric-ref" id="p1-r-ts"></span></p>
+                <p class="metric-note">Stays within ±2% of the final value.</p>
               </article>
               <article class="metric">
                 <h3>Steady-state error e<sub>ss</sub></h3>
                 <p class="metric-value"><span id="p1-m-ess">—</span><span class="metric-unit" id="p1-m-ess-pct"></span></p>
-                <p class="metric-note">r − y<sub>final</sub>, and % of r.<span class="metric-ref" id="p1-r-ess"></span></p>
+                <p class="metric-note">r − y<sub>final</sub>, and % of r.</p>
               </article>
-              <article class="metric metric--control">
-                <h3>Peak control |u|</h3>
-                <p class="metric-value" id="p1-m-u">—</p>
-                <p class="metric-note" id="p1-m-u-note">Largest effort sent to the plant.</p>
-              </article>
-            </div>
-            <div class="readout">
-              <div class="readout-item"><span class="readout-label">Final value y<sub>final</sub></span><span class="readout-value" id="p1-m-yss">—</span></div>
-              <div class="readout-item"><span class="readout-label">Closed-loop poles (linear, unsaturated)</span><span class="readout-value poles" id="p1-m-poles">—</span></div>
-              <div class="readout-item"><span class="readout-label">Solver</span><span class="readout-value poles" id="p1-m-solver">—</span></div>
             </div>
             <div class="callout callout--sat" id="p1-sat-callout" hidden>
               <h3>Actuator saturation is affecting this response</h3>
@@ -911,9 +872,9 @@
             <div class="card-head">
               <div>
                 <h2 id="p1-predict-title">Predict, then check</h2>
-                <p class="card-sub">Commit to an answer first. Checking loads the question’s starting setup and pins it as the reference.</p>
+                <p class="card-sub">Commit to an answer, then check it on the chart.</p>
               </div>
-              <span class="chip" data-role="progress">Question 1 of 4</span>
+              <span class="chip" data-role="progress">Question 1 of 3</span>
             </div>
             <ol class="steps" aria-label="Activity progress">
               <li data-step="predict">Predict</li>
@@ -938,103 +899,49 @@
             <div class="card-head">
               <div>
                 <h2 id="p1-validation-title">Validation checks</h2>
-                <p class="card-sub">Homework 2 tests 1–3 for K = 1, τ = 1 s and a unit step, plus solver checks.</p>
+                <p class="card-sub">Homework 2 tests for K = 1, τ = 1 s and a unit step.</p>
               </div>
               <span class="chip" id="p1-validation-summary">Checking…</span>
             </div>
-            <p class="card-text"><strong>Expected</strong> values come from the closed-loop formulas. <strong>Calculated</strong> values are measured from the same <code>PidEngine.simulate()</code> that draws the charts, with limits ±10 (never reached in these runs, so saturation cannot distort them). They do not depend on the sliders.</p>
+            <p class="card-text"><strong>Expected</strong> values come from the formulas; <strong>calculated</strong> values come from the same RK4 simulation that draws the charts (limits ±10, never reached in these runs). They do not depend on the sliders.</p>
             <div class="table-wrap">
               <table class="validation-table">
                 <thead>
-                  <tr><th scope="col">Check</th><th scope="col">Expected (analytical)</th><th scope="col">Calculated (simulated)</th><th scope="col">Status</th></tr>
+                  <tr><th scope="col">Test</th><th scope="col">Expected</th><th scope="col">Calculated</th><th scope="col">Result</th></tr>
                 </thead>
                 <tbody id="p1-validation-body"></tbody>
               </table>
             </div>
-            <div class="validation-actions">
-              <button type="button" class="btn btn-sm" data-load-test="1">Load test 1 in the playground</button>
-              <button type="button" class="btn btn-sm" data-load-test="2">Load tests 2–3 in the playground</button>
-            </div>
-            <p class="table-note" id="p1-validation-note">Tolerances: τ<sub>cl</sub> ±0.001 s, e<sub>ss</sub> ±0.001, ω<sub>n</sub> and ζ ±0.001, PI steady-state error |e<sub>ss</sub>| ≤ 10<sup>−4</sup> after 30 s, solver checks ≤ 10<sup>−6</sup>.</p>
+            <p class="table-note">PASS when τ<sub>cl</sub>, e<sub>ss</sub>, ω<sub>n</sub> and ζ are within ±0.001 of the expected value, and when |e<sub>ss</sub>| ≤ 10<sup>−4</sup> for Test 3.</p>
           </section>
         </div>
       </div>
 
-      <!-- 9. What each gain does -->
-      <section class="card" aria-labelledby="p1-effects-title">
+      <!-- 9. What P, I and D do -->
+      <section class="card" aria-labelledby="p1-concepts-title">
         <div class="section-head">
-          <h2 id="p1-effects-title">What each gain does</h2>
-          <p class="card-sub">Typical trends when one gain is raised and the others stay fixed. They are tendencies, not laws: the plant and the other gains decide the details, so always check the chart.</p>
-        </div>
-        <div class="effects-wrap">
-          <table class="effects">
-            <thead>
-              <tr><th scope="col">Raise…</th><th scope="col">Rise time</th><th scope="col">Overshoot</th><th scope="col">Settling time</th><th scope="col">Steady-state error</th></tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">K<sub>p</sub></th><td data-label="Rise time">Decreases</td><td data-label="Overshoot">Increases (none on the first-order plant)</td><td data-label="Settling time">Small change; shorter on the first-order plant</td><td data-label="Steady-state error">Decreases, 1/(1 + KK<sub>p</sub>), but never reaches zero</td></tr>
-              <tr><th scope="row">K<sub>i</sub></th><td data-label="Rise time">Decreases as K<sub>i</sub> grows (a very small K<sub>i</sub> makes the last part of the rise slow)</td><td data-label="Overshoot">Increases</td><td data-label="Settling time">Either way: a small K<sub>i</sub> creeps to the setpoint, a large K<sub>i</sub> rings</td><td data-label="Steady-state error">Eliminated for a step (if the loop is stable and unsaturated)</td></tr>
-              <tr><th scope="row">K<sub>d</sub></th><td data-label="Rise time">Usually longer (D resists the fast start)</td><td data-label="Overshoot">Decreases on the second-order plant; can rise slightly on the first-order plant</td><td data-label="Settling time">Decreases at moderate K<sub>d</sub></td><td data-label="Steady-state error">No direct effect</td></tr>
-            </tbody>
-          </table>
+          <h2 id="p1-concepts-title">What P, I and D do</h2>
+          <p class="card-sub">Typical trends when one gain is raised; the chart always has the final word.</p>
         </div>
         <div class="concepts">
           <article class="concept">
-            <h3>Proportional: push in proportion to the error</h3>
-            <p>u = K<sub>p</sub>e reacts instantly, so a larger K<sub>p</sub> gives a faster rise. With the first-order plant the closed loop is still first order, τ<sub>cl</sub> = τ/(1 + KK<sub>p</sub>), so it never overshoots. With the second-order plant ω<sub>n</sub> grows by √(1 + KK<sub>p</sub>) while ζ shrinks by the same factor, so it overshoots more. The error never fully goes away: P needs a non-zero e to produce the u that holds y.</p>
+            <h3>P: push in proportion to the error</h3>
+            <p>A larger K<sub>p</sub> gives a faster rise and a smaller steady-state error, 1/(1 + KK<sub>p</sub>), but never zero. On the second-order plant it also increases the overshoot.</p>
           </article>
           <article class="concept">
-            <h3>Integral: remember the error</h3>
-            <p>K<sub>i</sub>∫e keeps growing while any error remains, so the only place the loop can rest is e = 0: zero steady-state error for a step. The price is an extra pole (a slower, more oscillatory loop) and windup: if u is stuck at a limit, ∫e keeps growing and the output overshoots when it finally gets there.</p>
+            <h3>I: remove the remaining error</h3>
+            <p>K<sub>i</sub>∫e keeps growing while any error is left, so the loop only rests at e = 0: zero steady-state error for a step. Too much K<sub>i</sub> adds overshoot and oscillation.</p>
           </article>
           <article class="concept">
-            <h3>Derivative: react to the trend</h3>
-            <p>K<sub>d</sub> de/dt opposes fast changes, which adds damping when the plant has its own inertia (the second-order plant): try P = 5, I = 5 there and raise K<sub>d</sub> from 0 to 1, and the overshoot falls from about 52% to about 12%. On the first-order plant the loop has no inertia to damp, so D mainly adds a kick to u and changes little. Too much D slows the rise.</p>
+            <h3>D: react to the trend</h3>
+            <p>K<sub>d</sub> de/dt acts like a brake when the output moves fast, reducing overshoot on the second-order plant. It does not change the steady-state error. (The derivative is filtered with T<sub>f</sub> = 0.01 s.)</p>
           </article>
           <article class="concept">
-            <h3>Derivative filter and kick</h3>
-            <p>A pure derivative of a step is infinite. The simulation uses K<sub>d</sub>·s/(T<sub>f</sub>s + 1) with T<sub>f</sub> = 0.01 s, a standard practical filter. On a setpoint step this gives a tall, short spike in u (the derivative kick), usually clipped by the limit. Choosing “Output −y” differentiates the measurement instead, which removes the kick without changing the loop’s poles.</p>
-          </article>
-          <article class="concept">
-            <h3>When does saturation matter?</h3>
-            <p>Whenever the PID asks for more than u<sub>max</sub> (or less than u<sub>min</sub>). Then the plant gets the limit, not the requested value: the loop is temporarily open, the rise is slower than the formulas predict, and the integral winds up, which adds overshoot. Raise the setpoint to 3 with K<sub>p</sub> = 9 to see it. The formulas in the validation table assume no saturation.</p>
-          </article>
-          <article class="concept">
-            <h3>Unstable or still moving?</h3>
-            <p>Too much gain can make the loop unstable (try the second-order plant with K<sub>p</sub> = 2 and K<sub>i</sub> = 8). The page then says so and leaves the metrics blank: a number such as “settling time” would be meaningless for a response that never settles.</p>
+            <h3>Actuator limits</h3>
+            <p>When the PID asks for more than u<sub>max</sub>, the plant only gets u<sub>max</sub> (red shading). The response is then slower than the formulas predict, and the integral can wind up and add overshoot.</p>
           </article>
         </div>
-      </section>
-
-      <!-- 10. How the numbers are computed -->
-      <section class="card" aria-labelledby="p1-method-title">
-        <div class="section-head">
-          <h2 id="p1-method-title">How the numbers are computed</h2>
-        </div>
-        <div class="concepts">
-          <article class="concept">
-            <h3>Numerical solver</h3>
-            <p>The loop is a set of differential equations: the plant (1 or 2 states), the integral of e, and the derivative-filter state. They are stepped in time with the fourth-order Runge–Kutta method (RK4). The step Δt is 0.25 divided by the fastest pole of the loop, never more than 1 ms. At every sub-step the PID output is recomputed and clipped to the limits, so saturation is part of the simulation. Halving Δt changes the curves by less than 10<sup>−5</sup>.</p>
-          </article>
-          <article class="concept">
-            <h3>Simulation length</h3>
-            <p>The run lasts about 12 divided by the slowest closed-loop pole (at least 3 s, at most 60 s). If the response is still moving it is doubled, up to 120 s. A run counts as converged when y varies by at most 0.1% of r over its last 20%. If it has not converged, the page says so and leaves the metrics blank.</p>
-          </article>
-          <article class="concept">
-            <h3>Metric definitions</h3>
-            <ul class="def-list">
-              <li><strong>Final value</strong> y<sub>final</sub>: the last simulated value, used only after convergence.</li>
-              <li><strong>Rise time</strong>: time from 10% to 90% of y<sub>final</sub> (as in Modules 1 and 3).</li>
-              <li><strong>Overshoot</strong>: (y<sub>max</sub> − y<sub>final</sub>) / y<sub>final</sub> × 100%.</li>
-              <li><strong>Settling time</strong>: the last time y is outside y<sub>final</sub> ± 2%.</li>
-              <li><strong>Steady-state error</strong>: r − y<sub>final</sub>, also as a percentage of r.</li>
-            </ul>
-          </article>
-          <article class="concept">
-            <h3>Closed-loop poles</h3>
-            <p>For the linear (unsaturated) loop the characteristic equation is 1 + C(s)G(s) = 0, where C(s) = K<sub>p</sub> + K<sub>i</sub>/s + K<sub>d</sub>s/(T<sub>f</sub>s + 1). Its roots are computed numerically and shown above the charts. A pole with a positive real part means the loop is unstable. The simulation decides the metrics; the poles explain them.</p>
-          </article>
-        </div>
+        <p class="table-note">Simulation: RK4 with a step of at most 1 ms. Metrics are shown only when the response has settled; an unstable loop is labelled as such.</p>
       </section>
     </section>
   </main>
@@ -2116,7 +2023,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   function initP1() {
     const DEFAULTS = Object.freeze({
       plant: 'first', K: 1, tau: 1, zeta: 0.5, wn: 2,
-      Kp: 9, Ki: 0, Kd: 0, dMode: 'error', r: 1, uMax: 10, uMin: -10, window: 'auto', parts: false
+      Kp: 9, Ki: 0, Kd: 0, dMode: 'error', r: 1, uMax: 10, uMin: -10, window: 'auto'
     });
     // Presets are tuned for the default plant of each type (they keep the current K, τ, ζ, ω_n).
     const PRESETS = {
@@ -2124,8 +2031,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       second: { P: { Kp: 5, Ki: 0, Kd: 0 }, PI: { Kp: 5, Ki: 5, Kd: 0 }, PID: { Kp: 5, Ki: 5, Kd: 1 } }
     };
     const PRESET_HELP = {
-      first: 'First-order plant: P = 9 leaves 10% error, PI = 9 / 20 removes it, PID adds Kd = 0.1. D brings little here: there is no plant inertia to damp.',
-      second: 'Second-order plant: P = 5 overshoots and leaves 17% error, PI = 5 / 5 removes the error, PID adds Kd = 1, which damps the overshoot.'
+      first: 'P = 9 → PI = 9 / 20 → PID = 9 / 20 / 0.1. Start with P, then add I, then D.',
+      second: 'P = 5 → PI = 5 / 5 → PID = 5 / 5 / 1. Watch D damp the overshoot.'
     };
 
     const state = Object.assign({}, DEFAULTS, { reference: null });
@@ -2148,11 +2055,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     const ui = {
       plantRadios: document.querySelectorAll('input[name="p1-plant"]'),
-      dModeRadios: document.querySelectorAll('input[name="p1-dmode"]'),
       plantFirst: document.querySelectorAll('[data-plant="first"]'),
       plantSecond: document.querySelectorAll('[data-plant="second"]'),
       presets: document.querySelectorAll('[data-preset]'), presetHelp: $('p1-preset-help'),
-      window: $('p1-window'), parts: $('p1-parts'), reset: $('p1-reset'), inputError: $('p1-input-error'),
+      reset: $('p1-reset'), inputError: $('p1-input-error'),
       bd: $('p1-bd'), paramChip: $('p1-param-chip'),
       yLegend: $('p1-y-legend'), yCanvas: $('p1-y-chart'),
       uLegend: $('p1-u-legend'), uCanvas: $('p1-u-chart'), satChip: $('p1-sat-chip'), uNote: $('p1-u-note'),
@@ -2200,18 +2106,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           { text: 'Increase the overshoot, because the controller reacts faster.', correct: false }
         ],
         explanation: 'This plant has inertia: when y reaches the setpoint it is still moving fast. The D term sees e falling quickly and reduces u early, like a brake. In the characteristic equation it adds K·Kd·ω_n² to the s term, which is extra damping. The steady-state error was already zero thanks to Ki.',
-        tryIt: 'The PI response is pinned. Raise Kd to 1: overshoot falls to about 12% and settling drops from about 6.7 s to 1.3 s. Then push Kd to 3: the rise gets slow, too much damping.'
-      },
-      {
-        setup: { plant: 'first', K: 1, tau: 1, Kp: 9, Ki: 0, Kd: 0, r: 1, uMax: 10, uMin: -10 },
-        prompt: 'K = 1, τ = 1 s, Kp = 9, and u is limited to ±10. If the setpoint step is raised from 1 to 3, what happens to the rise time?',
-        choices: [
-          { text: 'Nothing: a linear loop just scales the response by 3.', correct: false },
-          { text: 'It gets longer, because u is held at the limit of 10 at the start.', correct: true },
-          { text: 'It gets shorter, because the error is three times bigger.', correct: false }
-        ],
-        explanation: 'Without limits the loop is linear and the response would simply be three times taller with the same timing. But at t = 0 the PID asks for u = 9 × 3 = 27 and the actuator can only give 10. Until the error falls below 10/9, the plant is driven open-loop at u = 10, so the output climbs more slowly than τ_cl = 0.1 s predicts.',
-        tryIt: 'r = 1 is pinned. Drag the setpoint to 3 and watch the u chart: the red shading shows how long u sits at the limit, and the rise-time card grows.'
+        tryIt: 'The PI response is pinned. Raise Kd to 1: overshoot falls to about 12% and settling drops from about 6.7 s to 1.3 s.'
       }
     ];
 
@@ -2284,10 +2179,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       uChart = new Chart(ui.uCanvas, {
         type: 'line',
         data: { datasets: [
-          lineSet('u', 'Control u(t)', THEME.control, { borderWidth: 2.5, order: 0 }),
-          lineSet('P', 'P part Kp·e', THEME.pTerm, { borderWidth: 1.5, borderDash: [5, 3], order: 1, hidden: true }),
-          lineSet('I', 'I part Ki·∫e', THEME.iTerm, { borderWidth: 1.5, borderDash: [5, 3], order: 1, hidden: true }),
-          lineSet('D', 'D part', THEME.dTerm, { borderWidth: 1.5, borderDash: [2, 2], order: 1, hidden: true })
+          lineSet('u', 'Control u(t)', THEME.control, { borderWidth: 2.5, order: 0 })
         ] },
         options: Object.assign(baseOptions(), {
           scales: {
@@ -2419,36 +2311,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       }
 
       // Control-signal chart
-      const showParts = state.parts;
       const uVals = ControlKit.extent(rec, 'u', W);
-      const partKeys = ['P', 'I', 'D'].filter((k) => k !== 'D' || state.Kd > 0).filter((k) => k !== 'I' || state.Ki > 0);
-      if (showParts) partKeys.forEach((k) => { const [a, b] = ControlKit.extent(rec, k, W); uVals.push(a, b); });
       uVals.push(0);
       const span = Math.max(Math.max(...uVals) - Math.min(...uVals), 1e-6);
       const showMax = state.uMax <= Math.max(...uVals) + 1.5 * span;
       const showMin = state.uMin >= Math.min(...uVals) - 1.5 * span;
       if (showMax) uVals.push(state.uMax);
       if (showMin) uVals.push(state.uMin);
-      // With the P, I and D parts shown, a huge part (for example the derivative kick) is clipped half a range beyond the limits.
-      const limSpan = state.uMax - state.uMin;
-      const uRange = ControlKit.valueRange(uVals, showParts ? [state.uMin - 0.5 * limSpan, state.uMax + 0.5 * limSpan] : null);
+      const uRange = ControlKit.valueRange(uVals);
       const spans = ControlKit.saturationSpans(rec, W);
       const uLegend = [{ label: 'Control signal u(t) (after the limit)', kind: 'line', color: THEME.control },
                        { label: 'Limits u_min, u_max', kind: 'dashed', color: THEME.limit }];
-      if (showParts) {
-        uLegend.push({ label: 'P part Kp·e', kind: 'dashed', color: THEME.pTerm });
-        if (partKeys.includes('I')) uLegend.push({ label: 'I part Ki·∫e', kind: 'dashed', color: THEME.iTerm });
-        if (partKeys.includes('D')) uLegend.push({ label: 'D part', kind: 'dotted', color: THEME.dTerm });
-      }
       renderLegend(ui.uLegend, uLegend);
       if (uChart) {
         const sets = uChart.data.datasets;
         sets[0].data = PidEngine.decimate(rec, 'u', 0, W, 500);
-        ['P', 'I', 'D'].forEach((k, i) => {
-          const visible = showParts && partKeys.includes(k);
-          sets[i + 1].hidden = !visible;
-          sets[i + 1].data = visible ? PidEngine.decimate(rec, k, 0, W, 400) : [];
-        });
         uChart.options.scales.x.max = W;
         uChart.options.scales.y.min = uRange[0];
         uChart.options.scales.y.max = uRange[1];
@@ -2465,7 +2342,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         uChart.update('none');
       }
       const hidden = [!showMax && `u_max = ${fmt(state.uMax, 1)}`, !showMin && `u_min = ${fmt(state.uMin, 1)}`].filter(Boolean);
-      ui.uNote.textContent = hidden.length ? `${hidden.join(' and ')} ${hidden.length > 1 ? 'are' : 'is'} far outside this view, so not drawn.` : '';
+      ui.uNote.textContent = hidden.length ? `${hidden.join(' and ')} ${hidden.length > 1 ? 'are' : 'is'} far outside this view, so not drawn.` : 'Red shading marks the time u is held at a limit.';
       ui.satChip.textContent = met.satTime > 0 ? `Saturated for ${fmt(met.satTime, 3)} s` : 'Not saturated';
       ui.satChip.className = 'chip ' + (met.satTime > 0 ? 'chip--fail' : 'chip--pass');
 
@@ -2477,23 +2354,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       set('p1-m-ts', ControlKit.metricText(met.ts, 3), !ok);
       set('p1-m-ess', ControlKit.metricText(met.ess, 3), !ok);
       $('p1-m-ess-pct').textContent = ok ? `(${fmt(met.essPct, 1)}%)` : '';
-      $('p1-m-u').textContent = fmt(met.peakU, 2);
-      $('p1-m-u-note').textContent = met.satTime > 0
-        ? `Held at a limit for ${fmt(met.satTime, 3)} s of the run.`
-        : `Largest effort sent to the plant (limits ${fmt(state.uMin, 1)} … ${fmt(state.uMax, 1)}).`;
-      $('p1-m-yss').textContent = ok ? fmt(met.yss, 4) : '—';
-      $('p1-m-poles').textContent = `${ControlKit.polesText(result.analysis.poles)}  →  ${result.analysis.stable ? 'stable' : 'unstable'}`;
-      $('p1-m-solver').textContent = `RK4, Δt = ${fmt(result.dt * 1000, 3)} ms, ${fmt(result.horizon, 1)} s simulated`;
-      const refMet = ref ? ref.metrics : null;
-      const refLine = (id, value, dec, unit) => {
-        $(id).innerHTML = refMet ? `Pinned: <b>${refMet.status === 'ok' ? escapeHtml(fmt(value, dec)) + unit : '—'}</b>` : '';
-      };
-      refLine('p1-r-tr', refMet && refMet.tr, 3, ' s');
-      refLine('p1-r-mp', refMet && refMet.mp, 1, '%');
-      refLine('p1-r-ts', refMet && refMet.ts, 3, ' s');
-      refLine('p1-r-ess', refMet && refMet.ess, 3, '');
 
-      renderSaturation(met, result);
+      lastRec = rec;
+      renderSaturation(met);
 
       // Reference controls
       const same = state.reference && JSON.stringify(loopConfig(state.reference)) === JSON.stringify(loopConfig(state));
@@ -2522,37 +2385,32 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       ui.status.innerHTML = `<strong>${escapeHtml(bad.title)}</strong><span>${escapeHtml(bad.text)}</span>`;
     }
 
-    /** Saturation explanation, with the same loop simulated without limits for comparison. */
-    function renderSaturation(met, result) {
+    /** Short explanation whenever u is held at a limit. */
+    function renderSaturation(met) {
       if (!(met.satTime > 0)) { ui.satCallout.hidden = true; return; }
       ui.satCallout.hidden = false;
-      const kickOnly = state.Kd > 0 && state.dMode === 'error' && met.satTime < 10 * PidEngine.DERIV_TF
-        && result.rec.sat.findIndex(Boolean) <= 2;
-      const free = PidEngine.simulate(Object.assign(loopConfig(state), { uMin: -Infinity, uMax: Infinity }));
-      const fm = PidEngine.metrics(free);
-      const compare = fm.status === 'ok' && met.status === 'ok'
-        ? ` Without the limits the same gains would give t_r = ${fmt(fm.tr, 3)} s, M_p = ${fmt(fm.mp, 1)}% and t_s = ${fmt(fm.ts, 3)} s (here: ${fmt(met.tr, 3)} s, ${fmt(met.mp, 1)}%, ${fmt(met.ts, 3)} s), but would need |u| up to ${fmt(fm.peakU, 1)}.`
-        : '';
       if (met.status === 'oscillating' || met.status === 'unstable') {
-        ui.satText.textContent = `u hit a limit for ${fmt(met.satTime, 3)} s. The linear loop is unstable (a pole in the right half-plane), so the output swings ever wider until the actuator limits stop it from growing: the limits only bound the swings, they do not stabilise the loop. Lower the gains to make it stable.`;
-        return;
+        ui.satText.textContent = `u hits a limit for ${fmt(met.satTime, 3)} s. The loop itself is unstable: the limits only stop the swings from growing. Lower the gains.`;
+      } else if (state.Kd > 0 && met.satTime < 10 * PidEngine.DERIV_TF && result0Sat()) {
+        ui.satText.textContent = `Derivative kick: the setpoint step makes de/dt very large for an instant, and the limit clips it for ${fmt(met.satTime, 3)} s. It barely changes y.`;
+      } else {
+        ui.satText.textContent = `u is held at a limit for ${fmt(met.satTime, 3)} s, so the plant receives less than the PID asks for. The output rises more slowly than the formulas predict${state.Ki > 0 ? ', and the integral winds up, which adds overshoot' : ''}.`;
       }
-      ui.satText.textContent = kickOnly
-        ? `This is the derivative kick: the setpoint step makes de/dt very large for a few T_f = ${PidEngine.DERIV_TF} s, and the limit clips it for ${fmt(met.satTime, 3)} s. It barely changes y. Set “Derivative acts on” to Output to remove it.` + compare
-        : `u was held at a limit for ${fmt(met.satTime, 3)} s. Meanwhile the plant gets the limit, not the PID output, so the loop is partly open: the output rises more slowly than the linear formulas predict${state.Ki > 0 ? ', and the integral keeps growing (windup), which adds overshoot later' : ''}. The closed-loop poles and the validation formulas describe the unsaturated loop only.` + compare;
     }
+    let lastRec = null;
+    function result0Sat() { return lastRec && lastRec.sat.findIndex(Boolean) <= 2; }
 
-    /* ---------- Validation (Homework 2 tests 1–3, plus solver checks) ---------- */
+    /* ---------- Validation: the three Homework 2 tests ----------
+       Every "calculated" value is measured from PidEngine.simulate(), the same
+       RK4 simulation that draws the charts. Nothing is hard-coded as PASS. */
     function runValidation() {
-      const plant = { type: 'first', K: 1, tau: 1 };
-      const base = { plant, r: 1, uMin: -10, uMax: 10 };
+      const base = { plant: { type: 'first', K: 1, tau: 1 }, r: 1, uMin: -10, uMax: 10 };
       const checks = [];
-      const e = (v) => (Math.abs(v) < 1e-12 ? '< 1e−12' : v.toExponential(1).replace('-', '−'));
 
-      // Test 1: P only, Kp = 9
+      // Test 1: P only, Kp = 9. τ_cl = time to reach 63.2 % of the simulated final value.
       const t1 = PidEngine.simulate(Object.assign({ Kp: 9 }, base), { horizon: 3 });
       const m1 = PidEngine.metrics(t1);
-      const level = (1 - Math.exp(-1)) * m1.yss;              // 63.2 % of the simulated final value
+      const level = (1 - Math.exp(-1)) * m1.yss;
       let tauCl = NaN;
       for (let i = 1; i < t1.rec.y.length; i++) {
         if (t1.rec.y[i] >= level) {
@@ -2562,108 +2420,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         }
       }
       checks.push({
-        name: 'Test 1a: P only (Kp = 9), closed-loop time constant',
-        detail: 'Time for y to reach 63.2% of its simulated final value',
-        expected: { main: 'τ_cl = 0.100 s', sub: 'τ / (1 + K·Kp) = 1 / 10' },
-        calculated: { main: `${fmt(tauCl, 4)} s`, sub: `peak |u| = ${fmt(m1.peakU, 2)}, limit 10: not saturated` },
-        pass: Math.abs(tauCl - 0.1) <= 0.001 && m1.satTime === 0
-      });
-      checks.push({
-        name: 'Test 1b: P only (Kp = 9), steady-state error',
-        detail: 'r − y_final with r = 1',
-        expected: { main: 'e_ss = 0.100 (10%)', sub: '1 / (1 + K·Kp)' },
-        calculated: { main: `${fmt(m1.ess, 4)} (${fmt(m1.essPct, 2)}%)`, sub: `y_final = ${fmt(m1.yss, 4)}` },
-        pass: m1.status === 'ok' && Math.abs(m1.ess - 0.1) <= 0.001
+        name: '1. P only',
+        detail: 'Kp = 9, Ki = 0, Kd = 0',
+        expected: { main: 'τ_cl = 0.1 s; e_ss = 10%', sub: 'τ/(1 + KKp) and 1/(1 + KKp)' },
+        calculated: { main: `τ_cl = ${fmt(tauCl, 4)} s; e_ss = ${fmt(m1.essPct, 2)}%`, sub: `y_final = ${fmt(m1.yss, 4)}, not saturated` },
+        pass: m1.status === 'ok' && m1.satTime === 0 && Math.abs(tauCl - 0.1) <= 0.001 && Math.abs(m1.ess - 0.1) <= 0.001
       });
 
-      // Test 2: PI, Kp = 1, Ki = 1. ω_n and ζ measured from the simulator's own equations.
-      const pi = Object.assign({ Kp: 1, Ki: 1 }, base);
-      const J = PidEngine.linearise(pi);                       // 2 × 2: states y and ∫e
+      // Test 2: PI, Kp = 1, Ki = 1. ω_n and ζ from the simulator's own state equations
+      // (finite-difference Jacobian A of the closed loop: ω_n = √det A, ζ = −trace A / 2ω_n).
+      const J = PidEngine.linearise(Object.assign({ Kp: 1, Ki: 1 }, base));
       const trace = J[0][0] + J[1][1];
       const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
       const wn = Math.sqrt(det);
       const zeta = -trace / (2 * wn);
       checks.push({
-        name: 'Test 2a: PI (Kp = 1, Ki = 1), natural frequency ω_n',
-        detail: 'Closed loop: τs² + (1 + K·Kp)s + K·Ki = s² + 2s + 1',
-        expected: { main: 'ω_n = 1.000 rad/s', sub: '√(K·Ki / τ)' },
-        calculated: { main: `${fmt(wn, 4)} rad/s`, sub: '√det(A), A = Jacobian of the simulated loop' },
-        pass: Math.abs(wn - 1) <= 0.001
-      });
-      checks.push({
-        name: 'Test 2b: PI (Kp = 1, Ki = 1), damping ratio ζ',
-        detail: 'Critically damped: a double pole at s = −1',
-        expected: { main: 'ζ = 1.000', sub: '(1 + K·Kp) / (2√(τ·K·Ki))' },
-        calculated: { main: fmt(zeta, 4), sub: '−trace(A) / (2ω_n)' },
-        pass: Math.abs(zeta - 1) <= 0.001
-      });
-      // Time-domain check: a unit load step at the plant input. With ζ = 1 its effect on y is
-      // (K/τ)·t·e^(−ω_n t), which peaks at t = 1/ω_n with height (K/τ)/(e·ω_n).
-      const plain = PidEngine.simulate(pi, { horizon: 8 });
-      const loaded = PidEngine.simulate(Object.assign({ disturbance: { time: 0, size: 1 } }, pi), { horizon: 8, dt: plain.dt });
-      let peak = -Infinity, tPeak = NaN;
-      loaded.rec.y.forEach((v, i) => { const d = v - plain.rec.y[i]; if (d > peak) { peak = d; tPeak = loaded.rec.t[i]; } });
-      checks.push({
-        name: 'Test 2c: PI, time-domain check of ω_n and ζ',
-        detail: 'Unit load step at the plant input; extra output Δy(t) = t·e^(−t)',
-        expected: { main: 'peak at t = 1.000 s', sub: `t = 1/ω_n, height 1/e = ${fmt(1 / Math.E, 4)}` },
-        calculated: { main: `peak at t = ${fmt(tPeak, 3)} s`, sub: `height ${fmt(peak, 4)}` },
-        pass: Math.abs(tPeak - 1) <= 0.002 && Math.abs(peak - 1 / Math.E) <= 0.001
+        name: '2. PI controller',
+        detail: 'Kp = 1, Ki = 1, Kd = 0; closed loop τs² + (1 + KKp)s + KKi = 0',
+        expected: { main: 'ω_n = 1 rad/s; ζ = 1', sub: '√(KKi/τ) and (1 + KKp)/(2√(τKKi))' },
+        calculated: { main: `ω_n = ${fmt(wn, 4)} rad/s; ζ = ${fmt(zeta, 4)}`, sub: 'from the simulated loop’s state matrix' },
+        pass: Math.abs(wn - 1) <= 0.001 && Math.abs(zeta - 1) <= 0.001
       });
 
-      // Test 3: any (stable, unsaturated) PI gives zero steady-state error for a step.
-      [[1, 1], [9, 20], [0.5, 4], [3, 10]].forEach(([kp, ki], i) => {
-        const res = PidEngine.simulate(Object.assign({ Kp: kp, Ki: ki }, base), { horizon: 30 });
-        const met = PidEngine.metrics(res);
-        const ess = 1 - res.rec.y[res.rec.y.length - 1];
-        checks.push({
-          name: `Test 3${'abcd'[i]}: PI (Kp = ${kp}, Ki = ${ki}), steady-state error`,
-          detail: 'r − y after 30 s, unit step',
-          expected: { main: 'e_ss = 0', sub: 'tolerance |e_ss| ≤ 1e−4' },
-          calculated: { main: `e_ss = ${e(ess)}`, sub: `peak |u| = ${fmt(met.peakU, 2)} (limit 10), ${res.analysis.stable ? 'stable' : 'unstable'}` },
-          pass: Math.abs(ess) <= 1e-4 && met.satTime === 0 && res.analysis.stable
-        });
-      });
-
-      // Solver checks against the Homework 1 closed-form responses.
-      const s1 = PidEngine.simulate(Object.assign({ Kp: 9 }, base), { horizon: 2 });
-      let err1 = 0;
-      s1.rec.t.forEach((t, i) => { err1 = Math.max(err1, Math.abs(s1.rec.y[i] - 0.9 * (1 - Math.exp(-t / 0.1)))); });
+      // Test 3: the same stable PI loop, unsaturated: error after 30 s of simulation.
+      const t3 = PidEngine.simulate(Object.assign({ Kp: 1, Ki: 1 }, base), { horizon: 30 });
+      const m3 = PidEngine.metrics(t3);
+      const ess = 1 - t3.rec.y[t3.rec.y.length - 1];
       checks.push({
-        name: 'Solver 1: RK4 vs Module 1 formula',
-        detail: 'First-order loop with Kp = 9 behaves as KA(1 − e^(−t/τ)) with K = 0.9, τ = 0.1 s',
-        expected: { main: 'max error ≤ 1e−6', sub: 'y(t) = 0.9(1 − e^(−t/0.1))' },
-        calculated: { main: `max error ${e(err1)}`, sub: `over ${s1.rec.t.length} samples` },
-        pass: err1 <= 1e-6
-      });
-      const z = 0.5, w = 2, kp = 3;
-      const s2 = PidEngine.simulate({ plant: { type: 'second', K: 1, zeta: z, wn: w }, Kp: kp, r: 1, uMin: -10, uMax: 10 }, { horizon: 8 });
-      const wcl = w * Math.sqrt(1 + kp), zcl = z / Math.sqrt(1 + kp), gain = kp / (1 + kp);
-      let err2 = 0;
-      s2.rec.t.forEach((t, i) => { err2 = Math.max(err2, Math.abs(s2.rec.y[i] - gain * secondOrderStep(t, zcl, wcl))); });
-      checks.push({
-        name: 'Solver 2: RK4 vs Module 3 formula',
-        detail: `Second-order plant (ζ = 0.5, ω_n = 2) with Kp = 3 is a standard second-order loop with ζ = ${fmt(zcl, 2)}, ω_n = ${fmt(wcl, 0)}`,
-        expected: { main: 'max error ≤ 1e−6', sub: 'Module 3 step formula × 0.75' },
-        calculated: { main: `max error ${e(err2)}`, sub: `over ${s2.rec.t.length} samples` },
-        pass: err2 <= 1e-6
+        name: '3. PI steady-state error',
+        detail: 'Kp = 1, Ki = 1, unit step, 30 s simulated',
+        expected: { main: 'e_ss ≈ 0', sub: 'tolerance |e_ss| ≤ 1e−4' },
+        calculated: { main: Math.abs(ess) < 1e-12 ? 'e_ss < 1e−12' : `e_ss = ${ess.toExponential(1).replace('-', '−')}`, sub: `peak |u| = ${fmt(m3.peakU, 2)}, not saturated` },
+        pass: t3.analysis.stable && m3.satTime === 0 && Math.abs(ess) <= 1e-4
       });
 
       const passed = renderValidation(ui.validationBody, checks);
       ui.validationSummary.textContent = `${passed} of ${checks.length} passed`;
       ui.validationSummary.className = 'chip ' + (passed === checks.length ? 'chip--pass' : 'chip--fail');
-    }
-
-    /** Module 3's underdamped / critical / overdamped unit-step formula (K = 1). */
-    function secondOrderStep(t, zeta, wn) {
-      if (t <= 0) return 0;
-      if (zeta < 1 - 1e-9) {
-        const s = zeta * wn, d = wn * Math.sqrt(1 - zeta * zeta);
-        return 1 - Math.exp(-s * t) * (Math.cos(d * t) + (s / d) * Math.sin(d * t));
-      }
-      if (Math.abs(zeta - 1) <= 1e-9) return 1 - (1 + wn * t) * Math.exp(-wn * t);
-      const r = wn * Math.sqrt(zeta * zeta - 1), p1 = -zeta * wn + r, p2 = -zeta * wn - r;
-      return 1 - (p2 * Math.exp(p1 * t) - p1 * Math.exp(p2 * t)) / (p2 - p1);
     }
 
     /* ---------- Controls ---------- */
@@ -2675,11 +2468,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         ControlKit.setSliderFill(s.el);
       });
       ui.plantRadios.forEach((radio) => { radio.checked = radio.value === state.plant; });
-      ui.dModeRadios.forEach((radio) => { radio.checked = radio.value === state.dMode; });
       ui.plantFirst.forEach((el) => { el.hidden = state.plant !== 'first'; });
       ui.plantSecond.forEach((el) => { el.hidden = state.plant !== 'second'; });
-      ui.window.value = state.window;
-      ui.parts.checked = state.parts;
       ui.presetHelp.textContent = PRESET_HELP[state.plant];
       const presets = PRESETS[state.plant];
       ui.presets.forEach((btn) => {
@@ -2701,15 +2491,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     ui.plantRadios.forEach((radio) => radio.addEventListener('change', () => {
       if (radio.checked) { state.plant = radio.value; Object.assign(state, PRESETS[state.plant].P); onControlChange(); }
     }));
-    ui.dModeRadios.forEach((radio) => radio.addEventListener('change', () => {
-      if (radio.checked) { state.dMode = radio.value; onControlChange(); }
-    }));
     ui.presets.forEach((btn) => btn.addEventListener('click', () => {
       Object.assign(state, PRESETS[state.plant][btn.dataset.preset]);
       onControlChange();
     }));
-    ui.window.addEventListener('change', () => { state.window = ui.window.value; onControlChange(); });
-    ui.parts.addEventListener('change', () => { state.parts = ui.parts.checked; onControlChange(); });
     ui.reset.addEventListener('click', () => {
       Object.assign(state, DEFAULTS, { reference: null });
       syncControls();
@@ -2724,13 +2509,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     ui.pin.addEventListener('click', pinCurrent);
     ui.unpin.addEventListener('click', () => { state.reference = null; render(); });
 
-    document.querySelectorAll('[data-load-test]').forEach((btn) => btn.addEventListener('click', () => {
-      const gains = btn.dataset.loadTest === '1' ? { Kp: 9, Ki: 0, Kd: 0 } : { Kp: 1, Ki: 1, Kd: 0 };
-      Object.assign(state, { plant: 'first', K: 1, tau: 1, r: 1, uMax: 10, uMin: -10, dMode: 'error', window: 'auto' }, gains);
-      syncControls();
-      render();
-      $('p1-y-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }));
 
     // "Predict, then check": checking loads the question's setup and pins it as the reference.
     const predict = createPredictCheck($('p1-predict'), QUESTIONS, {

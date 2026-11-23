@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" data-model="p3" data-homework="2">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control P3: Digital PID | ENCS4380 Dynamic Characteristics Toolkit</title>
+<meta name="description" content="Birzeit University ENCS4380 Homework 2; interactive Digital PID simulation and explanations.">
+<meta name="theme-color" content="#ffffff">
+<link rel="stylesheet" href="style.css"></head>
+<body><a class="skip-link" href="#p3-controls">Skip to controls</a>
+<header class="site-header"><div class="container header-inner"><div>
+<p class="course-line"><span class="course-code">ENCS4380</span><span class="course-sep" aria-hidden="true">|</span>Interfacing Techniques</p>
+<h1>Dynamic Characteristics Toolkit</h1><p class="module-line">Control P3 — Digital PID</p>
+<p class="meta-line">Birzeit University · Dr. Wasel Ghanem</p></div>
+<span class="header-badge">Homework 2</span></div></header>
+<nav class="hw2-nav" aria-label="Control section">
+<div class="container hw2-nav-inner">
+<a class="hw2-home" href="../index.html#control">← Toolkit home</a>
+<span class="hw2-nav-sep" aria-hidden="true"></span>
+<a href="p1.html">P1 PID playground</a>
+<a href="p2.html">P2 Slow sensor</a>
+<a href="p3.html" aria-current="page">P3 Digital PID</a>
+<a href="p4.html">P4 Tuning</a>
+<a href="mysystem.html">My system</a>
+</div></nav>
+<main class="container">
+  <noscript><p class="noscript">JavaScript is required to run the live digital PID simulation.</p></noscript>
+  <section class="module" id="p3-root" aria-labelledby="p3-intro-title">
+    <article class="card intro">
+      <div>
+        <h2 id="p3-intro-title">What happens when a PID controller samples too slowly?</h2>
+        <p class="lead">A digital PID reads the error only once every T<sub>s</sub> seconds and holds the same control signal until the next sample. Increase the sampling time, compare the curves and try anti-windup when the actuator hits its limit.</p>
+        <div class="model-grid">
+          <div class="model-box"><span class="model-label">Digital PID (Homework 2)</span>
+            <span class="math" style="font-size:0.96em;white-space:normal"><i>u</i>[<i>k</i>] = <i>K<sub>p</sub> e</i>[<i>k</i>] + <i>K<sub>i</sub>T<sub>s</sub></i> Σ <i>e</i>[<i>j</i>] + <i>K<sub>d</sub></i> (<i>e</i>[<i>k</i>] − <i>e</i>[<i>k</i>−1]) / <i>T<sub>s</sub></i></span>
+          </div>
+          <div class="model-box"><span class="model-label">First-order plant (Module 1)</span>
+            <span class="math"><i>τ</i><span class="frac"><span><i>dy</i></span><span><i>dt</i></span></span> = <i>Ku</i> − <i>y</i></span>
+          </div>
+          <div class="model-box"><span class="model-label">Between samples</span>
+            <span class="math"><i>u</i>(<i>t</i>) = <i>u</i>[<i>k</i>] &nbsp; (<i>kT<sub>s</sub></i> ≤ <i>t</i> &lt; (<i>k</i>+1)<i>T<sub>s</sub></i>)</span>
+          </div>
+        </div>
+        <dl class="symbols">
+          <div><dt><i>T<sub>s</sub></i></dt><dd>sampling period in seconds</dd></div>
+          <div><dt><i>e</i>[<i>k</i>]</dt><dd>setpoint minus sampled output</dd></div>
+          <div><dt><i>u</i>[<i>k</i>]</dt><dd>held actuator command after saturation</dd></div>
+          <div><dt><i>I</i>[<i>k</i>]</dt><dd>accumulated error, limited by optional anti-windup</dd></div>
+        </dl>
+        <p class="assumption-line">The sampled controller runs at t = 0, T<sub>s</sub>, 2T<sub>s</sub>, ... . The plant evolves continuously and is integrated using RK4 with a held input. Derivative-on-error follows the homework equation.</p>
+      </div>
+      <aside class="example" aria-labelledby="p3-example-title">
+        <h3 id="p3-example-title">Example: why sampling can cause oscillation</h3>
+        <p>For the first-order plant K = 1, τ = 1 s and P control with K<sub>p</sub> = 5, the actuator is updated at fixed intervals.</p>
+        <ol class="example-steps">
+          <li><span class="ex-time">T<sub>s</sub> = 0.02 s</span><span class="ex-temp">Fast</span><span class="ex-note">Many small corrections per time constant</span></li>
+          <li><span class="ex-time">T<sub>s</sub> = 0.30 s</span><span class="ex-temp">Late</span><span class="ex-note">The plant moves farther before the next correction</span></li>
+          <li><span class="ex-time">Anti-windup</span><span class="ex-temp">On / off</span><span class="ex-note">Prevents the integral from growing in the direction of saturation</span></li>
+        </ol>
+        <p class="example-why"><strong>Try it:</strong> Select the <em>Slow sampling</em> preset. Compare the output with the dashed fast-sampling reference, then select <em>Windup test</em> and turn anti-windup on and off.</p>
+      </aside>
+    </article>
+    <div class="workspace">
+      <section class="card controls" id="p3-controls" aria-labelledby="p3-controls-title" tabindex="-1">
+        <h2 id="p3-controls-title">Digital loop controls</h2>
+        <div class="controls-stack">
+          <div class="control-group" role="group" aria-labelledby="p3-group-plant">
+            <p class="control-group-title" id="p3-group-plant">Plant</p>
+            <fieldset class="control"><legend class="sr-only">Plant type</legend><div class="segmented">
+              <input type="radio" id="p3-plant-first" name="p3-plant" value="first" checked><label for="p3-plant-first">First order</label>
+              <input type="radio" id="p3-plant-second" name="p3-plant" value="second"><label for="p3-plant-second">Second order</label>
+            </div></fieldset>
+            <div class="control"><div class="control-row"><label for="p3-K">Plant gain <span class="var">K</span></label><output class="control-value" id="p3-K-value">1.00</output></div><input type="range" id="p3-K" min="0.5" max="2" step="0.1" value="1"><div class="range-scale"><span>0.5</span><span>2.0</span></div></div>
+            <div class="control" data-plant="first"><div class="control-row"><label for="p3-tau">Time constant <span class="var">τ</span></label><output class="control-value" id="p3-tau-value">1.00 s</output></div><input type="range" id="p3-tau" min="0.2" max="4" step="0.1" value="1"><div class="range-scale"><span>0.2 s</span><span>4 s</span></div></div>
+            <div class="control" data-plant="second" hidden><div class="control-row"><label for="p3-zeta">Damping <span class="var">ζ</span></label><output class="control-value" id="p3-zeta-value">0.50</output></div><input type="range" id="p3-zeta" min="0.1" max="2" step="0.05" value="0.5"><div class="range-scale"><span>0.1</span><span>2</span></div></div>
+            <div class="control" data-plant="second" hidden><div class="control-row"><label for="p3-wn">Natural frequency <span class="var">ω<sub>n</sub></span></label><output class="control-value" id="p3-wn-value">2.00 rad/s</output></div><input type="range" id="p3-wn" min="0.5" max="6" step="0.1" value="2"><div class="range-scale"><span>0.5</span><span>6 rad/s</span></div></div>
+          </div>
+          <div class="control-group" role="group" aria-labelledby="p3-group-pid">
+            <p class="control-group-title" id="p3-group-pid">Controller and sample time</p>
+            <div class="preset-row"><button class="btn btn-sm" type="button" data-preset="fast">Fast sampling</button><button class="btn btn-sm" type="button" data-preset="slow">Slow sampling</button><button class="btn btn-sm" type="button" data-preset="windup">Windup test</button></div>
+            <p class="control-help" id="p3-preset-help">Try changing T<sub>s</sub> while keeping the gains fixed.</p>
+            <div class="control"><div class="control-row"><label for="p3-Ts">Sample time <span class="var">T<sub>s</sub></span></label><output class="control-value" id="p3-Ts-value">0.050 s</output></div><input type="range" id="p3-Ts" min="0.005" max="0.8" step="0.005" value="0.05"><div class="range-scale"><span>0.005 s</span><span>0.8 s</span></div></div>
+            <div class="control"><div class="control-row"><label for="p3-Kp">Proportional <span class="var">K<sub>p</sub></span></label><output class="control-value" id="p3-Kp-value">3.00</output></div><input type="range" id="p3-Kp" min="0" max="15" step="0.1" value="3"><div class="range-scale"><span>0</span><span>15</span></div></div>
+            <div class="control"><div class="control-row"><label for="p3-Ki">Integral <span class="var">K<sub>i</sub></span></label><output class="control-value" id="p3-Ki-value">3.00 s⁻¹</output></div><input type="range" id="p3-Ki" min="0" max="15" step="0.1" value="3"><div class="range-scale"><span>0</span><span>15</span></div></div>
+            <div class="control"><div class="control-row"><label for="p3-Kd">Derivative <span class="var">K<sub>d</sub></span></label><output class="control-value" id="p3-Kd-value">0.00 s</output></div><input type="range" id="p3-Kd" min="0" max="1" step="0.01" value="0"><div class="range-scale"><span>0</span><span>1</span></div></div>
+            <label class="check"><input type="checkbox" id="p3-aw" checked> Anti-windup (conditional integration)</label>
+          </div>
+          <div class="control-group" role="group" aria-labelledby="p3-group-test">
+            <p class="control-group-title" id="p3-group-test">Step and actuator</p>
+            <div class="control"><div class="control-row"><label for="p3-r">Setpoint step <span class="var">r</span></label><output class="control-value" id="p3-r-value">1.00</output></div><input type="range" id="p3-r" min="0.5" max="2" step="0.1" value="1"><div class="range-scale"><span>0.5</span><span>2.0</span></div></div>
+            <div class="control"><div class="control-row"><label for="p3-limit">Symmetric actuator limit</label><output class="control-value" id="p3-limit-value">±2.00</output></div><input type="range" id="p3-limit" min="0.5" max="10" step="0.1" value="2"><div class="range-scale"><span>±0.5</span><span>±10</span></div></div>
+            <div class="control"><label for="p3-window">Time window</label><select class="select" id="p3-window"><option value="12">12 s</option><option value="24" selected>24 s</option><option value="40">40 s</option></select></div>
+            <button type="button" class="btn btn-block" id="p3-reset">Reset controls</button>
+          </div>
+        </div><p class="input-error" id="p3-error" hidden></p>
+      </section>
+      <div class="workspace-main">
+        <section class="card" aria-labelledby="p3-diagram-title">
+          <div class="card-head"><div><h2 id="p3-diagram-title">Sampled feedback loop</h2><p class="card-sub">The controller updates only at kT<sub>s</sub>; the plant runs continuously between updates.</p></div><span class="chip" id="p3-sample-chip">20 updates/s</span></div>
+          <div class="p3-diagram-scroll bd"><svg viewBox="0 0 930 215" class="p3-diagram" role="img" aria-label="Setpoint, sampled error, digital PID, saturation, zero-order hold, plant and feedback">
+            <defs><marker id="p3-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#0f172a"/></marker></defs>
+            <text x="16" y="96">r[k]</text><line x1="53" y1="91" x2="94" y2="91" class="bd-line" marker-end="url(#p3-arrow)"/>
+            <circle cx="116" cy="91" r="21" class="bd-sum"/><text x="105" y="85" class="bd-sign">+</text><text x="107" y="107" class="bd-sign">−</text>
+            <line x1="137" y1="91" x2="173" y2="91" class="bd-line" marker-end="url(#p3-arrow)"/>
+            <rect x="175" y="56" width="147" height="69" rx="10" class="bd-box bd-box--ctrl"/><text x="249" y="81" text-anchor="middle" class="bd-title">Digital PID</text><text x="249" y="101" text-anchor="middle" class="bd-sub" id="p3-bd-Ts">Ts = 0.050 s</text>
+            <line x1="322" y1="91" x2="359" y2="91" class="bd-line" marker-end="url(#p3-arrow)"/>
+            <rect x="361" y="56" width="106" height="69" rx="10" class="bd-box bd-box--limit"/><text x="414" y="82" text-anchor="middle" class="bd-title">Limit</text><text x="414" y="102" text-anchor="middle" class="bd-sub" id="p3-bd-limit">±2.0</text>
+            <line x1="467" y1="91" x2="507" y2="91" class="bd-line" marker-end="url(#p3-arrow)"/>
+            <rect x="509" y="56" width="122" height="69" rx="10" class="bd-box"/><text x="570" y="81" text-anchor="middle" class="bd-title">Zero-order hold</text><text x="570" y="102" text-anchor="middle" class="bd-sub">u[k] stays fixed</text>
+            <line x1="631" y1="91" x2="676" y2="91" class="bd-line" marker-end="url(#p3-arrow)"/>
+            <rect x="678" y="56" width="135" height="69" rx="10" class="bd-box"/><text x="746" y="81" text-anchor="middle" class="bd-title">Plant</text><text x="746" y="103" text-anchor="middle" class="bd-sub" id="p3-bd-plant">K = 1, τ = 1 s</text>
+            <line x1="813" y1="91" x2="898" y2="91" class="bd-line" marker-end="url(#p3-arrow)"/><text x="863" y="80" class="bd-math">y(t)</text>
+            <polyline points="859,91 859,174 116,174 116,112" class="bd-line bd-line--fb" marker-end="url(#p3-arrow)"/><rect x="468" y="155" width="142" height="34" rx="9" class="bd-box bd-box--sensor"/><text x="539" y="177" text-anchor="middle" class="bd-sub">Sample y(kTs)</text>
+          </svg></div><div class="diagram-mobile" role="img" aria-label="Compact closed-loop diagram showing the feedback path">
+  <div class="diagram-flow">
+    <div class="diagram-step"><strong>Setpoint r</strong>Compare with feedback</div>
+    <div class="diagram-step"><strong>Digital PID</strong>Gains and error</div>
+    <div class="diagram-step"><strong>Actuator</strong>Limited sampled u[k]</div>
+    <div class="diagram-step"><strong>Plant</strong>Zero-order hold → plant → y(t)</div>
+  </div>
+  <div class="diagram-feedback">↶ Output is sampled at kTₛ and returned to the summing point (negative feedback)</div>
+</div>
+          <p class="bd-caption">Zero-order hold is part of the numerical model, not just the drawing. Anti-windup stops integrating when the requested actuator signal exceeds a limit and the error would drive it farther beyond that limit.</p>
+        </section>
+        <section class="card" aria-labelledby="p3-y-title">
+          <div class="card-head"><div><h2 id="p3-y-title">Sampled response vs fast-sampling reference</h2><p class="card-sub">Compare the current T<sub>s</sub> with an otherwise identical loop at a faster T<sub>s</sub> (at most 0.01 s).</p></div><span class="chip" id="p3-response-chip">Ts = 0.050 s</span></div>
+          <ul class="legend" id="p3-y-legend"></ul><div class="chart-box"><canvas id="p3-y-chart" role="img" aria-label="Setpoint and sampled PID output against a fast sampled reference"></canvas><p class="chart-fallback" data-chart-fallback hidden>Chart.js was unavailable. Metrics and code are still accessible.</p></div>
+          <div class="chart-toolbar"><p class="ref-status" id="p3-ref-status"></p><div class="chart-tools"><button type="button" class="btn btn-sm" id="p3-pin">Pin current curve</button><button type="button" class="btn btn-sm" id="p3-unpin">Clear reference</button></div></div>
+          <p class="chart-hint">For large T<sub>s</sub>, changes happen later and the output may overshoot or oscillate. Pin one curve before moving the slider.</p>
+        </section>
+        <section class="card" aria-labelledby="p3-u-title">
+          <div class="card-head"><div><h2 id="p3-u-title">Stair-step control signal u[k]</h2><p class="card-sub">Each flat step is one sample-and-hold interval. The red dashed lines are actuator limits.</p></div><span class="chip" id="p3-sat-chip">Not saturated</span></div>
+          <ul class="legend" id="p3-u-legend"></ul><div class="chart-box chart-box--u"><canvas id="p3-u-chart" role="img" aria-label="Digital PID actuator signal in stair steps"></canvas><p class="chart-fallback" data-chart-fallback hidden>Control chart unavailable.</p></div><p class="chart-hint" id="p3-u-note"></p>
+        </section>
+
+        <section class="card" aria-labelledby="p3-sweep-title">
+          <div class="card-head"><div>
+            <h2 id="p3-sweep-title">How performance changes with sampling time</h2>
+            <p class="card-sub">Keep the current plant, PID gains and limit fixed. Only T<sub>s</sub> changes across this sweep.</p>
+          </div><span class="chip chip--accent" id="p3-sweep-chip">Sampling sweep</span></div>
+          <ul class="legend" id="p3-sweep-legend"></ul>
+          <div class="chart-box chart-box--u"><canvas id="p3-sweep-chart" role="img" aria-label="Overshoot and settling time as sample time increases"></canvas><p class="chart-fallback" data-chart-fallback hidden>Sweep plot is unavailable.</p></div>
+          <div class="sweep-summary" aria-live="polite">
+            <div><span>Current sample time</span><strong id="p3-sweep-current">—</strong></div>
+            <div><span>First sampled point that does not settle</span><strong id="p3-sweep-warning">—</strong></div>
+            <div><span>Samples checked</span><strong id="p3-sweep-count">—</strong></div>
+          </div>
+          <p class="chart-hint" id="p3-sweep-note">Overshoot uses the final settled output; unsettled runs are shown as gaps. Settling-time and overshoot use different vertical axes.</p>
+        </section>
+        <section class="card" aria-labelledby="p3-i-title">
+          <div class="card-head"><div><h2 id="p3-i-title">Integral memory and anti-windup</h2><p class="card-sub">Integral state I[k] = T<sub>s</sub> Σ e[j]. Watch it grow when the actuator saturates without protection.</p></div><span class="chip" id="p3-aw-chip">Anti-windup ON</span></div>
+          <ul class="legend" id="p3-i-legend"></ul><div class="chart-box chart-box--u"><canvas id="p3-i-chart" role="img" aria-label="Accumulated integral error with and without anti-windup"></canvas><p class="chart-fallback" data-chart-fallback hidden>Integral chart unavailable.</p></div><p class="chart-hint" id="p3-aw-note"></p>
+        </section>
+        <section aria-labelledby="p3-metrics-title">
+          <div class="section-head"><h2 id="p3-metrics-title">Live performance metrics</h2><p class="card-sub">Read from y(t), using 10–90% rise time and the ±2% settling band.</p></div>
+          <div class="status-line" id="p3-status" aria-live="polite">Calculating...</div>
+          <div class="metrics">
+            <article class="metric metric--tau"><h3>Rise time t<sub>r</sub></h3><p class="metric-value"><span id="p3-m-tr">—</span><span class="metric-unit">s</span></p><p class="metric-note">10–90% of the final value.</p></article>
+            <article class="metric metric--error"><h3>Overshoot M<sub>p</sub></h3><p class="metric-value"><span id="p3-m-mp">—</span><span class="metric-unit">%</span></p><p class="metric-note">Peak above the final value.</p></article>
+            <article class="metric metric--accent"><h3>Settling time t<sub>s</sub></h3><p class="metric-value"><span id="p3-m-ts">—</span><span class="metric-unit">s</span></p><p class="metric-note">Last exit from ±2% band.</p></article>
+            <article class="metric"><h3>Steady-state error e<sub>ss</sub></h3><p class="metric-value"><span id="p3-m-ess">—</span></p><p class="metric-note" id="p3-ess-note">r − y<sub>final</sub>.</p></article>
+          </div>
+          <div class="callout callout--sat" id="p3-sat-callout" hidden><h3>Actuator saturation is active</h3><p id="p3-sat-text"></p></div>
+        </section>
+        <section class="card" id="p3-predict" aria-labelledby="p3-predict-title">
+          <div class="card-head"><div><h2 id="p3-predict-title">Predict, then check</h2><p class="card-sub">Choose an answer, then verify it by moving a slider.</p></div><span class="chip" data-role="progress">Question 1 of 3</span></div>
+          <ol class="steps"><li data-step="predict">Predict</li><li data-step="check">Check</li><li data-step="observe">Observe on the chart</li></ol>
+          <fieldset class="predict-question"><legend data-role="prompt"></legend><div class="choices" data-role="choices"></div></fieldset>
+          <div class="predict-actions"><button class="btn btn-primary" type="button" data-role="check" disabled>Check prediction</button><button type="button" class="btn" data-role="retry" hidden>Try again</button><button type="button" class="btn" data-role="next" hidden>Next question</button><p class="predict-hint" data-role="hint">Choose an answer to enable the check.</p></div>
+          <div class="feedback" data-role="feedback" hidden tabindex="-1" aria-live="polite"></div>
+        </section>
+        <section class="card" aria-labelledby="p3-validation-title">
+          <div class="card-head"><div><h2 id="p3-validation-title">Digital PID validation</h2><p class="card-sub">Checks use fixed configurations, independent of your sliders.</p></div><span class="chip" id="p3-validation-summary">Checking...</span></div>
+          <p class="card-text">The tests confirm that zero-order hold integration is correct, anti-windup blocks harmful accumulation, and PI action removes steady-state error when unsaturated.</p>
+          <div class="table-wrap"><table class="validation-table"><thead><tr><th>Test</th><th>Expected</th><th>Calculated</th><th>Result</th></tr></thead><tbody id="p3-validation-body"></tbody></table></div>
+        </section>
+        <section class="card" aria-labelledby="p3-code-title">
+          <div class="card-head"><div><h2 id="p3-code-title">Arduino code for the current gains</h2><p class="card-sub">The same sampled equation, actuator limit and anti-windup rule as the simulation.</p></div><button type="button" class="btn btn-primary" id="p3-copy">Copy code</button></div>
+          <p class="card-text">This code assumes a signed output that maps u = 0 to 50% PWM. It is a demonstration, not a directly deployable one-way motor or heater controller. The example uses A0 as a normalized sensor and PWM pin 9 as a demonstration output mapping. Adapt the two hardware functions and units for your actual motor or heater before using it on a circuit.</p>
+          <pre class="pid-code"><code id="p3-code"></code></pre><p class="chart-hint" id="p3-copy-status" aria-live="polite">Code updates whenever a gain, limit or sampling time changes.</p>
+        </section>
+      </div>
+    </div>
+    <section class="card" aria-labelledby="p3-concepts-title">
+      <div class="section-head"><h2 id="p3-concepts-title">Understanding digital PID</h2><p class="card-sub">What to look for in the plots.</p></div>
+      <div class="concepts">
+        <article class="concept"><h3>Sampling is not continuous feedback</h3><p>The loop cannot respond to changes between samples. At each tick it reads y[k], computes e[k] and holds u[k] until the next tick. A long T<sub>s</sub> can turn a well-tuned controller into an oscillating one.</p></article>
+        <article class="concept"><h3>Integral and derivative both depend on T<sub>s</sub></h3><p>Integral area is approximated by adding e[k]T<sub>s</sub>. The derivative is (e[k] − e[k−1])/T<sub>s</sub>. Simply changing T<sub>s</sub> without using it in those terms changes the controller.</p></article>
+        <article class="concept"><h3>Why anti-windup matters</h3><p>With a saturated actuator, a large integral may keep demanding impossible control after the error changes sign. Conditional integration skips an update only when it would push the command farther past the active limit.</p></article>
+        <article class="concept"><h3>Why the actuator trace is a staircase</h3><p>The controller executes at discrete times, but the physical plant is continuous. RK4 integrates the plant between controller updates under a fixed (zero-order-held) input.</p></article>
+      </div><p class="table-note">Note: this P3 uses backward difference derivative-on-error, exactly as in the homework. P1/P2 use a filtered continuous derivative. Real sensors usually need derivative filtering and noise handling.</p>
+    </section>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container footer-inner">
+<p><strong>ENCS4380 Interfacing Techniques</strong> · Homework 2: PID Control Toolkit</p>
+<p>Birzeit University · Control P3: Digital PID</p></div></footer>
+<script src="chart.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

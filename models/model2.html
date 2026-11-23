@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-model="model2">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frequency response | ENCS4380</title>
+  <meta name="description" content="ENCS4380 Team 40 interactive toolkit for dynamic system characteristics and PID control.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Cpath d='M6 25C9 14 14 10 26 9' fill='none' stroke='%232dd4bf' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <!--
+    ENCS4380 Dynamic Characteristics Interactive Toolkit (one self-contained file)
+    Structure of this file:
+      Styles:   shell styles, then each module's styles scoped to its panel
+                (#module-1 ... #module-4; Modules 1 and 3 share one base)
+      Page:     header, module tabs, four panels (one module each), footer
+      Scripts:  Chart.js 4.4.1 (loaded once), navigation, shared helpers,
+                then one script per module, each wrapped in its own function
+  -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="tk-skip" href="#tk-main">Skip to the module</a>
+  <header class="tk-header">
+    <div class="tk-container tk-header-inner">
+      <p class="tk-course"><span class="tk-code">ENCS4380</span> — Interfacing Techniques</p>
+      <h1>Dynamic Characteristics Interactive Toolkit</h1>
+      <p class="tk-meta">Birzeit University · Dr. Wasel Ghanem</p>
+    </div>
+  </header>
+  <nav class="tk-nav" aria-label="Homework 1 modules">
+    <div class="tk-container">
+      <a class="tk-hw1-home" href="../index.html">← Toolkit home</a>
+      <div class="tk-tabs">
+      <a class="tk-tab" href="model1.html"><span class="tk-tab-num" aria-hidden="true">1</span><span class="tk-tab-long">First-order time response</span><span class="tk-tab-short">Time response</span></a>
+      <a class="tk-tab" href="model2.html" aria-current="page"><span class="tk-tab-num" aria-hidden="true">2</span><span class="tk-tab-long">Frequency response</span><span class="tk-tab-short">Frequency response</span></a>
+      <a class="tk-tab" href="model3.html"><span class="tk-tab-num" aria-hidden="true">3</span><span class="tk-tab-long">Second order &amp; state space</span><span class="tk-tab-short">Second order</span></a>
+      <a class="tk-tab" href="model4.html"><span class="tk-tab-num" aria-hidden="true">4</span><span class="tk-tab-long">Guess the sensor</span><span class="tk-tab-short">Guess the sensor</span></a>
+      </div>
+    </div>
+  </nav>
+  <main id="tk-main">
+    <section class="tk-panel" id="module-2">
+      <div class="tk-container tk-panel-head"><h2 class="tk-panel-title">Module 2 — First-Order Frequency Response</h2></div>
+      <div class="container module" id="m2-root">
+    <section class="card intro">
+      <h2>How does a sensor follow a sine wave?</h2>
+      <p>A first-order sensor reduces the amplitude and delays the phase of a changing input. Explore how time constant and frequency affect its response.</p>
+      <p class="equation-strip">M = 1 / √(1 + (ωτ)²) &nbsp; · &nbsp; φ = −tan⁻¹(ωτ) &nbsp; · &nbsp; ω = 2πf</p>
+    </section>
+    <div class="workspace">
+    <section class="card response-card">
+    <h2>Input and output sine waves</h2>
+    <p>Unit input amplitude and sensor gain K = 1. This shows the steady-state response, after startup effects have faded.</p>
+    <p>The time axis shows three input cycles and changes with frequency.</p>
+    <!-- Draw both waves here. -->
+    <div class="sine-plot">
+      <canvas id="m2-sine-chart" role="img" aria-label="Input and output amplitude versus time"></canvas>
+    </div>
+    <p id="m2-chart-status" role="status"></p>
+    </section>
+    <aside class="card controls" aria-labelledby="m2-controls-heading">
+    <h2 id="m2-controls-heading">Sensor controls</h2>
+    <div class="control">
+      <!-- Frequency in Hz. -->
+      <div class="control-row">
+      <label for="m2-frequency">Input frequency</label>
+      <output id="m2-frequency-value" for="m2-frequency">1 Hz</output>
+      </div>
+      <input type="range" id="m2-frequency" min="0" max="1000" step="any" value="500">
+      <div class="range-scale"><span>0.01 Hz</span><span>100 Hz</span></div>
+      <p class="help">Logarithmic slider: equal distances multiply frequency by the same factor.</p>
+      <label for="m2-frequency-number">Enter frequency (Hz):</label>
+      <input type="number" id="m2-frequency-number" min="0.01" max="100" step="any" value="1" required>
+    </div>
+    <div class="control">
+    <div class="control-row">
+    <label for="m2-tau">Time constant τ</label>
+    <output id="m2-tau-value" for="m2-tau">0.2 s</output>
+    </div>
+    <input type="range" id="m2-tau" min="0" max="1000" step="any" value="0">
+    <div class="range-scale"><span>0.00001 s</span><span>2 s</span></div>
+    <p class="help">Logarithmic slider for small and large τ values. Larger τ means a slower sensor.</p>
+    <label for="m2-tau-number">Enter τ (seconds):</label>
+    <input type="number" id="m2-tau-number" min="0.00001" max="2" step="any" value="0.2" required>
+    </div>
+    <p class="help">Chosen exploration ranges: τ from 0.00001 to 2 s and frequency from 0.01 to 100 Hz. These are interface limits, not homework requirements. Use the number boxes for precise values.</p>
+    <p id="m2-input-status" role="status"></p>
+    </aside>
+    <div class="workspace-main">
+    <section class="card">
+    <h2>Live response</h2>
+    <div class="metrics">
+    <!-- Live results. -->
+    <p class="metric">Amplitude ratio M: <output id="m2-amplitude"></output></p>
+    <p class="metric">Phase shift φ (negative means lag): <output id="m2-phase"></output></p>
+    </div>
+    </section>
+    <section class="card">
+    <h2>Cutoff frequency and dynamic error</h2>
+    <!-- Cutoff and error. -->
+    <p>Angular cutoff ωc = 1 / τ: <output id="m2-cutoff-angular"></output></p>
+    <p>Cutoff fc = 1 / (2π τ): <output id="m2-cutoff-hz"></output></p>
+    <p>At cutoff, the amplitude ratio is about 0.707 and the phase shift is −45°.</p>
+    <p>Dynamic error δ = M − 1: <output id="m2-dynamic-error"></output></p>
+    <p>A negative error means the output amplitude is smaller than the input. This measures amplitude error, not phase lag.</p>
+    </section>
+    <section class="card">
+    <h2>Bode plots</h2>
+    <p>These graphs show the response across many frequencies. Equal steps along the frequency axis mean equal ratios, such as 0.1, 1, and 10 Hz.</p>
+    <p>Magnitude = 20 log₁₀(M) in decibels (dB). The cutoff marker is at about −3.01 dB and −45°.</p>
+    <div class="sine-plot">
+      <canvas id="m2-bode-magnitude" role="img" aria-label="Bode magnitude in decibels versus frequency in Hz"></canvas>
+    </div>
+    <div class="sine-plot">
+      <canvas id="m2-bode-phase" role="img" aria-label="Bode phase in degrees versus frequency in Hz"></canvas>
+    </div>
+    </section>
+      <section class="card" id="m2-predict" aria-labelledby="m2-predict-title">
+        <div class="card-head"><div><h2 id="m2-predict-title">Predict, then check</h2><p class="card-sub">Choose an answer before moving the sliders, then observe the plotted result.</p></div><span class="chip" data-role="progress">Question 1 of 3</span></div>
+        <ol class="steps" aria-label="Prediction steps"><li data-step="predict">Predict</li><li data-step="observe">Try the controls</li><li data-step="check">See result</li></ol>
+        <fieldset class="predict-question"><legend data-role="prompt"></legend><div class="choices" data-role="choices"></div></fieldset>
+        <div class="predict-actions"><button class="btn" data-role="retry" type="button" hidden>Try again</button><button class="btn" data-role="next" type="button" hidden>Next question</button><p class="predict-hint" data-role="hint">Choose your answer first.</p></div>
+        <button class="btn" data-role="skip" type="button" hidden>Show result now (skip moving)</button>
+        <div class="feedback" data-role="feedback" tabindex="-1" aria-live="polite" hidden></div>
+      </section>
+    <section class="card">
+    <h2>Homework validation checks</h2>
+    <p>Source: homework page 2, section 3.2, checks 2 and 3. These use fixed test inputs, independently of the sliders.</p>
+    <p>Expected values are rounded in the homework. Each tolerance below is an absolute difference in the listed unit.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>First-order frequency response validation</caption>
+        <thead>
+          <tr><th scope="col">Check</th><th scope="col">Expected</th><th scope="col">Calculated</th><th scope="col">Tolerance</th><th scope="col">Result</th></tr>
+        </thead>
+        <tbody id="m2-validation-results"></tbody>
+      </table>
+    </div>
+    <p>For a maximum error magnitude of 5%, M must be at least 0.95. Solving for τ gives τmax = √(1 / 0.95² − 1) / (2π × 100). The 50 Hz check uses this unrounded τmax.</p>
+    </section>
+
+    <section class="card" aria-labelledby="m2-concepts-title">
+      <h2 id="m2-concepts-title">Understanding Module 2</h2>
+      <div class="concepts">
+        <article class="concept"><h3>Why is this a first-order system?</h3><p>The model τ dy/dt + y = Kx contains one time derivative. Here K = 1, so a constant input is eventually reproduced without a gain change.</p></article>
+        <article class="concept"><h3>What does the time constant mean?</h3><p>A larger τ means a slower sensor. At the same nonzero frequency, it gives a smaller amplitude ratio and a larger phase lag. Its cutoff frequency is lower.</p></article>
+        <article class="concept"><h3>How do Hz and rad/s differ?</h3><p>Frequency f counts cycles per second. Angular frequency ω counts radians per second: ω = 2πf. An input sin(2t) has ω = 2 rad/s, or about 0.318 Hz.</p></article>
+        <article class="concept"><h3>What does phase lag mean?</h3><p>The output reaches its peaks later than the input. A negative phase shift indicates lag. For a single sine wave, the time delay is −φ/ω when φ is in radians.</p></article>
+        <article class="concept"><h3>What happens at cutoff?</h3><p>At ω = 1/τ, M = 1/√2 ≈ 0.707 and φ = −45°. The Bode magnitude is about −3.01 dB. The sensor still responds above cutoff, but with more attenuation.</p></article>
+        <article class="concept"><h3>What does dynamic error measure?</h3><p>δ = M − 1 measures the relative amplitude error for this unity-gain model. Multiply by 100 for percent. It does not include phase error. The sine plots show steady state, after the startup transient has faded.</p></article>
+      </div>
+    </section>
+    </div>
+    </div>
+      </div>
+    </section>
+  </main>
+  <footer class="tk-footer">
+    <div class="tk-container tk-footer-inner">
+      <p><strong>ENCS4380 Interfacing Techniques</strong> · Dynamic Characteristics Interactive Toolkit</p>
+      <p>Birzeit University, Dr. Wasel Ghanem. Team 40.</p>
+    </div>
+  </footer>
+<script src="chart.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

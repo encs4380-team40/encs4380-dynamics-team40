@@ -7,15 +7,6 @@
   <meta name="description" content="ENCS4380 Team 40 interactive toolkit for dynamic system characteristics and PID control.">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Cpath d='M6 25C9 14 14 10 26 9' fill='none' stroke='%232dd4bf' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
-  <!--
-    ENCS4380 Dynamic Characteristics Interactive Toolkit (one self-contained file)
-    Structure of this file:
-      Styles:   shell styles, then each module's styles scoped to its panel
-                (#module-1 ... #module-4; Modules 1 and 3 share one base)
-      Page:     header, module tabs, four panels (one module each), footer
-      Scripts:  Chart.js 4.4.1 (loaded once), navigation, shared helpers,
-                then one script per module, each wrapped in its own function
-  -->
   <link rel="stylesheet" href="models/style.css">
   <script defer src="models/app.js"></script>
 </head>
@@ -38,16 +29,6 @@
       <article><h3>Homework 2 · PID Control</h3><p>Explore how feedback changes a system’s response. Tune PID gains, compare sensor lag and sampling times, and apply speed control to a micromouse motor.</p><a class="tk-homework-open" href="models/p1.html">Choose Homework 2</a></article>
     </div>
   </section>
-    <section id="control" class="tk-panel tk-container" aria-labelledby="control-title" hidden>
-      <h2 id="control-title">Control · Homework 2</h2>
-      <ul class="tk-tabs tk-control-links">
-        <li><a class="tk-tab" href="models/p1.html"><span class="tk-tab-num">P1</span><span>PID Playground</span></a></li>
-        <li><a class="tk-tab" href="models/p2.html"><span class="tk-tab-num">P2</span><span>Slow Sensor</span></a></li>
-        <li><a class="tk-tab" href="models/p3.html"><span class="tk-tab-num">P3</span><span>Digital PID</span></a></li>
-        <li><a class="tk-tab" href="models/p4.html"><span class="tk-tab-num">P4</span><span>Tuning Challenge</span></a></li>
-        <li><a class="tk-tab" href="models/mysystem.html"><span class="tk-tab-num">MS</span><span>My System</span></a></li>
-      </ul>
-    </section>
   </main>
   <footer class="tk-footer">
     <div class="tk-container tk-footer-inner">

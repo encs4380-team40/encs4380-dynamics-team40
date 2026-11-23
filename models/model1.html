@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-model="model1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>First-order time response | ENCS4380</title>
+  <meta name="description" content="ENCS4380 Team 40 interactive toolkit for dynamic system characteristics and PID control.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Cpath d='M6 25C9 14 14 10 26 9' fill='none' stroke='%232dd4bf' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <!--
+    ENCS4380 Dynamic Characteristics Interactive Toolkit (one self-contained file)
+    Structure of this file:
+      Styles:   shell styles, then each module's styles scoped to its panel
+                (#module-1 ... #module-4; Modules 1 and 3 share one base)
+      Page:     header, module tabs, four panels (one module each), footer
+      Scripts:  Chart.js 4.4.1 (loaded once), navigation, shared helpers,
+                then one script per module, each wrapped in its own function
+  -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="tk-skip" href="#tk-main">Skip to the module</a>
+  <header class="tk-header">
+    <div class="tk-container tk-header-inner">
+      <p class="tk-course"><span class="tk-code">ENCS4380</span> — Interfacing Techniques</p>
+      <h1>Dynamic Characteristics Interactive Toolkit</h1>
+      <p class="tk-meta">Birzeit University · Dr. Wasel Ghanem</p>
+    </div>
+  </header>
+  <nav class="tk-nav" aria-label="Homework 1 modules">
+    <div class="tk-container">
+      <a class="tk-hw1-home" href="../index.html">← Toolkit home</a>
+      <div class="tk-tabs">
+      <a class="tk-tab" href="model1.html" aria-current="page"><span class="tk-tab-num" aria-hidden="true">1</span><span class="tk-tab-long">First-order time response</span><span class="tk-tab-short">Time response</span></a>
+      <a class="tk-tab" href="model2.html"><span class="tk-tab-num" aria-hidden="true">2</span><span class="tk-tab-long">Frequency response</span><span class="tk-tab-short">Frequency response</span></a>
+      <a class="tk-tab" href="model3.html"><span class="tk-tab-num" aria-hidden="true">3</span><span class="tk-tab-long">Second order &amp; state space</span><span class="tk-tab-short">Second order</span></a>
+      <a class="tk-tab" href="model4.html"><span class="tk-tab-num" aria-hidden="true">4</span><span class="tk-tab-long">Guess the sensor</span><span class="tk-tab-short">Guess the sensor</span></a>
+      </div>
+    </div>
+  </nav>
+  <main id="tk-main">
+    <section class="tk-panel" id="module-1">
+      <div class="tk-container tk-panel-head"><h2 class="tk-panel-title">Module 1 — First-Order Time Response</h2></div>
+      <div class="container">
+
+
+    <!-- ======================================================================
+         MODULE 1: FIRST-ORDER TIME RESPONSE
+         Every id in this module starts with "m1-". Modules 2–4 should use
+         "m2-", "m3-", "m4-" so nothing collides when the pages are merged.
+         ====================================================================== -->
+    <section class="module" id="m1-root" aria-labelledby="m1-intro-title">
+
+      <!-- 1. Module introduction -->
+      <article class="card intro">
+        <div>
+          <h2 id="m1-intro-title">How closely does a sensor follow its input?</h2>
+          <p class="lead">Explore how a first-order sensor responds to changing inputs. Adjust its gain and time constant to understand response speed, tracking error, and sensor lag.</p>
+          <div class="model-grid">
+            <div class="model-box">
+              <span class="model-label">Sensor model</span>
+              <span class="math"><i>τ</i><span class="frac"><span><i>dy</i></span><span><i>dt</i></span></span>+ <i>y</i> = <i>K x</i>(<i>t</i>)</span>
+            </div>
+            <div class="model-box">
+              <span class="model-label">Transfer function</span>
+              <span class="math"><i>G</i>(<i>s</i>) = <span class="frac"><span><i>K</i></span><span><i>τs</i> + 1</span></span></span>
+            </div>
+          </div>
+          <dl class="symbols">
+            <div><dt><i>K</i></dt><dd>static gain</dd></div>
+            <div><dt><i>τ</i></dt><dd>time constant (s)</dd></div>
+            <div><dt><i>x</i>(<i>t</i>)</dt><dd>input</dd></div>
+            <div><dt><i>y</i>(<i>t</i>)</dt><dd>sensor output</dd></div>
+          </dl>
+          <p class="assumption-line">Assumptions: zero initial conditions, <i>y</i>(0) = 0, and input amplitude <strong>A = 1</strong>.</p>
+        </div>
+
+        <aside class="example" aria-labelledby="m1-example-title">
+          <h3 id="m1-example-title">Example: a thermometer dipped into tea</h3>
+          <p>A thermometer with τ = 10 s moves from room air at 20 °C into tea at 80 °C. That is a 60 °C step with K = 1:</p>
+          <p class="math example-eq"><i>T</i>(<i>t</i>) = 20 + 60(1 − <i>e</i><sup>−<i>t</i>/10</sup>) °C</p>
+          <ol class="example-steps">
+            <li><span class="ex-time">t = 0 s</span><span class="ex-temp">20.0 °C</span><span class="ex-note">still at room temperature</span></li>
+            <li><span class="ex-time">t = 10 s = τ</span><span class="ex-temp">57.9 °C</span><span class="ex-note">20 + 0.632 × 60, 63.2% of the step</span></li>
+            <li><span class="ex-time">t = 30 s = 3τ</span><span class="ex-temp">77.0 °C</span><span class="ex-note">20 + 0.950 × 60, 95% of the step</span></li>
+          </ol>
+          <p class="example-why"><strong>Why only about 58 °C after 10 s?</strong> After one time constant, any first-order sensor has covered 1 − e<sup>−1</sup> = 63.2% of a step, and 0.632 × 60 °C ≈ 38 °C above the starting 20 °C. Read it then and you are about 22 °C low, even though the thermometer is perfectly calibrated: it simply has not caught up yet.</p>
+        </aside>
+      </article>
+
+      <div class="workspace">
+        <!-- 2. Control panel -->
+        <section class="card controls" id="m1-controls" aria-labelledby="m1-controls-title" tabindex="-1">
+          <h2 id="m1-controls-title">Sensor controls</h2>
+          <div class="controls-grid">
+            <div class="control">
+              <div class="control-row">
+                <label for="m1-k">Static gain <span class="var">K</span></label>
+                <output class="control-value" id="m1-k-value" for="m1-k">1.0</output>
+              </div>
+              <input type="range" id="m1-k" min="0.5" max="3" step="0.1" value="1" aria-describedby="m1-k-help">
+              <div class="range-scale" aria-hidden="true"><span>0.5</span><span>3.0</span></div>
+              <p class="control-help" id="m1-k-help">Scales the final value KA. It does not change the timing.</p>
+            </div>
+
+            <div class="control">
+              <div class="control-row">
+                <label for="m1-tau">Time constant <span class="var">τ</span></label>
+                <output class="control-value" id="m1-tau-value" for="m1-tau">2.0 s</output>
+              </div>
+              <input type="range" id="m1-tau" min="0.2" max="10" step="0.1" value="2" aria-describedby="m1-tau-help">
+              <div class="range-scale" aria-hidden="true"><span>0.2 s</span><span>10 s</span></div>
+              <p class="control-help" id="m1-tau-help">How sluggish the sensor is. A larger τ means a slower response.</p>
+            </div>
+
+            <fieldset class="control">
+              <legend>Input signal <span class="var">x</span>(<span class="var">t</span>)</legend>
+              <div class="segmented">
+                <input type="radio" name="m1-input" id="m1-input-step" value="step" checked>
+                <label for="m1-input-step">Step input</label>
+                <input type="radio" name="m1-input" id="m1-input-ramp" value="ramp">
+                <label for="m1-input-ramp">Ramp input</label>
+              </div>
+              <p class="control-help" id="m1-input-help">x(t) = A for t ≥ 0: a sudden change, like plunging a thermometer into tea.</p>
+            </fieldset>
+
+            <div class="control">
+              <p class="assumption"><strong>A = 1, fixed.</strong> For the step it is the step height; for the ramp it is the rate, 1 input unit per second. Initial conditions are zero.</p>
+              <button type="button" class="btn btn-block" id="m1-reset">Reset to defaults</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="workspace-main">
+          <!-- 3. Main response chart -->
+          <section class="card" aria-labelledby="m1-chart-title">
+            <div class="card-head">
+              <div>
+                <h2 id="m1-chart-title">Step response</h2>
+                <p class="card-sub" id="m1-chart-sub">How the sensor output follows a sudden change of input.</p>
+              </div>
+              <span class="chip" id="m1-param-chip">K = 1.0, τ = 2.0 s, A = 1</span>
+            </div>
+
+            <div class="equation-strip" id="m1-eq-step">
+              <span class="math"><i>x</i>(<i>t</i>) = <i>A</i> for <i>t</i> ≥ 0</span>
+              <span class="math"><i>y</i>(<i>t</i>) = <i>KA</i>(1 − <i>e</i><sup>−<i>t</i>/<i>τ</i></sup>)</span>
+            </div>
+            <div class="equation-strip" id="m1-eq-ramp" hidden>
+              <span class="math"><i>x</i>(<i>t</i>) = <i>At</i></span>
+              <span class="math"><i>y</i>(<i>t</i>) = <i>KA</i>[<i>t</i> − <i>τ</i>(1 − <i>e</i><sup>−<i>t</i>/<i>τ</i></sup>)]</span>
+              <span class="math"><i>e</i>(<i>t</i>) = <i>Kx</i>(<i>t</i>) − <i>y</i>(<i>t</i>)</span>
+              <span class="math">= <i>KAτ</i>(1 − <i>e</i><sup>−<i>t</i>/<i>τ</i></sup>)</span>
+            </div>
+
+            <ul class="legend" id="m1-main-legend" aria-label="Main chart legend"></ul>
+            <div class="chart-box">
+              <canvas id="m1-main-chart" role="img" aria-label="First-order sensor response chart"></canvas>
+              <p class="chart-fallback" data-chart-fallback hidden>The chart could not be drawn because Chart.js did not load. Check your internet connection and reload the page. The metrics, activity and validation below still work.</p>
+            </div>
+
+            <div class="chart-toolbar">
+              <p class="ref-status" id="m1-ref-status" aria-live="polite"></p>
+              <div class="chart-tools">
+                <button type="button" class="btn btn-sm" id="m1-pin">Pin current curve</button>
+                <button type="button" class="btn btn-sm" id="m1-unpin">Clear reference</button>
+              </div>
+            </div>
+            <p class="chart-hint">Hover or tap the chart to read exact values. The time axis always spans 0 to 6τ with one gridline per time constant, so the curve keeps its shape while the seconds on the axis change. To see a change in speed or size, compare the live curve with the dotted reference curve.</p>
+          </section>
+
+          <!-- 4. Live response metrics -->
+          <section aria-labelledby="m1-metrics-title">
+            <div class="section-head">
+              <h2 id="m1-metrics-title">Live response metrics</h2>
+              <p class="card-sub">Recalculated from the formulas every time you move a control.</p>
+            </div>
+
+            <div class="metrics" id="m1-metrics-step">
+              <article class="metric metric--tau">
+                <h3>Time constant τ</h3>
+                <p class="metric-value"><span id="m1-step-tau">2.00</span><span class="metric-unit">s</span></p>
+                <p class="metric-note">Time to reach 63.2% of the final value.</p>
+              </article>
+              <article class="metric metric--accent">
+                <h3>Final value KA</h3>
+                <p class="metric-value" id="m1-step-final">1.000</p>
+                <p class="metric-note">Where the output settles for a step of height A = 1.</p>
+              </article>
+              <article class="metric">
+                <h3>Output at t = τ</h3>
+                <p class="metric-value" id="m1-step-ytau">0.632</p>
+                <p class="metric-note" id="m1-step-ytau-note">63.2% of KA, reached at t = 2.00 s.</p>
+              </article>
+              <article class="metric">
+                <h3>Output at t = 3τ</h3>
+                <p class="metric-value" id="m1-step-y3tau">0.950</p>
+                <p class="metric-note" id="m1-step-y3tau-note">95.0% of KA, reached at t = 6.00 s.</p>
+              </article>
+              <article class="metric">
+                <h3>Rise time 10–90%</h3>
+                <p class="metric-value"><span id="m1-step-rise">4.39</span><span class="metric-unit">s</span></p>
+                <p class="metric-note">t<sub>r</sub> = τ ln 9 ≈ 2.20τ for any first-order sensor.</p>
+              </article>
+            </div>
+
+            <div class="metrics" id="m1-metrics-ramp" hidden>
+              <article class="metric metric--tau">
+                <h3>Time constant τ</h3>
+                <p class="metric-value"><span id="m1-ramp-tau">2.00</span><span class="metric-unit">s</span></p>
+                <p class="metric-note">Sets how far behind the output runs.</p>
+              </article>
+              <article class="metric metric--accent">
+                <h3>Ideal output slope KA</h3>
+                <p class="metric-value"><span id="m1-ramp-slope">1.00</span><span class="metric-unit">per s</span></p>
+                <p class="metric-note">How fast K·x(t) rises, in output units per second.</p>
+              </article>
+              <article class="metric metric--error">
+                <h3>Steady-state error e<sub>ss</sub></h3>
+                <p class="metric-value"><span id="m1-ramp-ess">2.00</span><span class="metric-unit">output units</span></p>
+                <p class="metric-note">e<sub>ss</sub> = KAτ. The vertical gap between the lines.</p>
+              </article>
+              <article class="metric metric--tau">
+                <h3>Steady-state time lag</h3>
+                <p class="metric-value"><span id="m1-ramp-lag">2.00</span><span class="metric-unit">s</span></p>
+                <p class="metric-note">Equal to τ. The horizontal gap between the lines.</p>
+              </article>
+            </div>
+
+            <div class="callout" id="m1-step-callout">
+              <h3>Why 63.2% and 95%?</h3>
+              <p>Put t = τ into y(t) = KA(1 − e<sup>−t/τ</sup>) and you get KA(1 − e<sup>−1</sup>) = 0.632 KA. At t = 3τ, 1 − e<sup>−3</sup> = 0.950. These fractions are the same for every K and τ, so you can read τ straight off a measured step response: it is the moment the output reaches 63.2% of its final value.</p>
+            </div>
+
+            <div class="callout callout--ramp" id="m1-ramp-callout" hidden>
+              <h3>Why the ramp error never disappears</h3>
+              <p>The sensor output only moves when there is a gap: τ dy/dt = Kx − y. To keep climbing at the ramp’s rate, dy/dt = KA, the gap must settle at Kx − y = KAτ. The output becomes a copy of the ideal ramp shifted right by τ: y(t) → KA(t − τ).</p>
+              <p id="m1-ramp-live">With K = 1.0 and τ = 2.0 s, the ideal output climbs 1.00 units every second and the sensor is 2.00 s behind, so it sits 1.00 × 2.00 = 2.00 units below the ideal line.</p>
+              <div class="unit-pair">
+                <span class="unit-tag unit-tag--error">Error KAτ: output units, vertical gap</span>
+                <span class="unit-tag unit-tag--lag">Lag τ: seconds, horizontal gap</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. Logarithmic error-fraction chart -->
+          <section class="card" aria-labelledby="m1-log-title">
+            <div class="card-head">
+              <div>
+                <h2 id="m1-log-title">Error fraction on a logarithmic axis</h2>
+                <p class="card-sub">Step-response reference: how much of the step is still missing at time t.</p>
+              </div>
+              <span class="chip chip--accent" id="m1-slope-chip">slope of ln f = −0.500 s⁻¹</span>
+            </div>
+            <div class="equation-strip">
+              <span class="math"><i>f</i>(<i>t</i>) = <span class="frac"><span><i>KA</i> − <i>y</i>(<i>t</i>)</span><span><i>KA</i></span></span> = <i>e</i><sup>−<i>t</i>/<i>τ</i></sup></span>
+              <span class="math">ln <i>f</i>(<i>t</i>) = −<i>t</i>/<i>τ</i></span>
+            </div>
+            <p class="note" id="m1-log-ramp-note" hidden>You are viewing the <strong>ramp</strong> response above. This chart still shows the <strong>step-response</strong> error fraction for the current τ. The ramp tracking error does not decay to zero (it grows toward KAτ), so the step formula does not describe it.</p>
+            <ul class="legend" id="m1-log-legend" aria-label="Logarithmic chart legend"></ul>
+            <div class="chart-box chart-box--log">
+              <canvas id="m1-log-chart" role="img" aria-label="Step-response error fraction on a logarithmic axis"></canvas>
+              <p class="chart-fallback" data-chart-fallback hidden>The chart could not be drawn because Chart.js did not load. Check your internet connection and reload the page.</p>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-label">Theoretical slope of ln f, −1/τ</span><span class="readout-value" id="m1-slope-theory">−0.500 s⁻¹</span></div>
+              <div class="readout-item"><span class="readout-label">Slope read from the curve, τ to 3τ</span><span class="readout-value" id="m1-slope-read">−0.500 s⁻¹</span></div>
+              <div class="readout-item"><span class="readout-label">Estimated τ = −1 / slope</span><span class="readout-value" id="m1-tau-estimate">2.00 s</span></div>
+            </div>
+            <p class="card-text"><strong>Why this is useful:</strong> with real, noisy data you rarely know exactly where the 63.2% point is. Instead, compute f(t) for every sample, plot it on a log axis and fit a straight line: τ = −1/slope. The fit uses all the data, so it is much less sensitive to noise than a single reading, and if the points do not form a straight line, the sensor is not behaving as first order (or the final value is wrong).</p>
+            <p class="card-text">The right-hand axis shows ln f directly: it drops by exactly 1 for every τ seconds, which is the slope −1/τ. K does not appear in f(t), so moving the K slider leaves this chart unchanged.</p>
+          </section>
+
+          <!-- 6. Predict, then check (driven by createPredictCheck in the script) -->
+          <section class="card" id="m1-predict" aria-labelledby="m1-predict-title">
+            <div class="card-head">
+              <div>
+                <h2 id="m1-predict-title">Predict, then check</h2>
+                <p class="card-sub">Commit to an answer first, then test it on the chart.</p>
+              </div>
+              <span class="chip" data-role="progress">Question 1 of 3</span>
+            </div>
+            <ol class="steps" aria-label="Activity progress">
+              <li data-step="predict">Predict</li>
+              <li data-step="check">Check</li>
+              <li data-step="observe">Observe on the chart</li>
+            </ol>
+            <fieldset class="predict-question">
+              <legend data-role="prompt"></legend>
+              <div class="choices" data-role="choices"></div>
+            </fieldset>
+            <div class="predict-actions">
+              <button type="button" class="btn btn-primary" data-role="check" disabled>Check prediction</button>
+              <button type="button" class="btn" data-role="retry" hidden>Try again</button>
+              <button type="button" class="btn" data-role="next" hidden>Next question</button>
+              <p class="predict-hint" data-role="hint">Choose an answer to enable the check.</p>
+            </div>
+            <div class="feedback" data-role="feedback" tabindex="-1" aria-live="polite" hidden></div>
+          </section>
+
+          <!-- 7. Validation checks -->
+          <section class="card" aria-labelledby="m1-validation-title">
+            <div class="card-head">
+              <div>
+                <h2 id="m1-validation-title">Validation checks</h2>
+                <p class="card-sub">Validation test 1 from the lecture slides: first-order step response.</p>
+              </div>
+              <span class="chip" id="m1-validation-summary">Checking…</span>
+            </div>
+            <p class="card-text">The calculated values come from the same <code>FirstOrder.stepResponse()</code> function that draws the chart, evaluated live at the current K and τ.</p>
+            <div class="table-wrap">
+              <table class="validation-table">
+                <thead>
+                  <tr><th scope="col">Check</th><th scope="col">Expected</th><th scope="col">Calculated</th><th scope="col">Status</th></tr>
+                </thead>
+                <tbody id="m1-validation-body"></tbody>
+              </table>
+            </div>
+            <p class="table-note">PASS when |y/KA − expected| ≤ 0.001, because the reference values are rounded to three decimals. Validation tests 2 to 6 (frequency response, second order, state space) belong to Modules 2 and 3.</p>
+          </section>
+        </div>
+      </div>
+
+      <!-- 8. Understanding the parameters -->
+      <section class="card" aria-labelledby="m1-concepts-title">
+        <div class="section-head">
+          <h2 id="m1-concepts-title">Understanding the parameters</h2>
+        </div>
+        <div class="concepts">
+          <article class="concept">
+            <h3>What is a first-order sensor?</h3>
+            <p>A sensor whose dynamics are dominated by one energy-storage element: the heat stored in a thermometer bulb, or the charge on an RC filter’s capacitor. Its output cannot jump. It moves toward K·x at a rate proportional to the remaining gap: τ dy/dt = Kx − y.</p>
+          </article>
+          <article class="concept">
+            <h3>What does τ mean physically?</h3>
+            <p>τ compares how much energy the sensor must store with how easily it exchanges energy. For a thermometer, τ = mc/(hA): heat capacity divided by heat-transfer coefficient times surface area. A bigger bulb, or still air instead of stirred water, means a larger τ.</p>
+          </article>
+          <article class="concept">
+            <h3>What happens when τ increases?</h3>
+            <p>Every response time stretches in proportion: the 63.2% point (τ), the 95% point (3τ) and the 10–90% rise time (2.2τ). Doubling τ doubles all of them. The final value KA does not change.</p>
+          </article>
+          <article class="concept">
+            <h3>What does the gain K change?</h3>
+            <p>K is the static sensitivity, in output units per input unit (for example, mV per °C). It scales the final value KA and the whole curve vertically, but not the timing: the output still reaches 63.2% of its final value at t = τ.</p>
+          </article>
+          <article class="concept">
+            <h3>Why is there a steady-state error for a ramp?</h3>
+            <p>To keep climbing at the ramp’s rate KA, the output needs a constant gap Kx − y = KAτ to drive it. So it runs parallel to the ideal ramp, τ seconds late. The same delay shows up as an error of KAτ in output units, or as a lag of τ in seconds.</p>
+          </article>
+          <article class="concept">
+            <h3>Why is the logarithmic error plot useful?</h3>
+            <p>On a log axis, f(t) = e<sup>−t/τ</sup> becomes a straight line whose slope gives τ. Fitting that line to measured samples uses all of the data rather than one 63.2% reading, so the estimate is robust to noise, and a curved plot warns that the sensor is not truly first order.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+      </div>
+    </section>
+  </main>
+  <footer class="tk-footer">
+    <div class="tk-container tk-footer-inner">
+      <p><strong>ENCS4380 Interfacing Techniques</strong> · Dynamic Characteristics Interactive Toolkit</p>
+      <p>Birzeit University, Dr. Wasel Ghanem. Team 40.</p>
+    </div>
+  </footer>
+<script src="chart.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-model="mysystem" data-homework="2"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My System | ENCS4380 Dynamic Characteristics Toolkit</title>
+<meta name="description" content="Enter project measured K and tau, design and validate sampled PID, generate Arduino code.">
+<link rel="stylesheet" href="style.css"></head>
+<body><a class="skip-link" href="#ms-controls">Skip to controls</a>
+<header class="site-header"><div class="container header-inner"><div><p class="course-line"><span class="course-code">ENCS4380</span> · Interfacing Techniques</p>
+<h1>Dynamic Characteristics Toolkit</h1><p class="module-line">My System — Project PID Design</p>
+<p class="meta-line">Birzeit University · Dr. Wasel Ghanem</p></div><span class="header-badge">Homework 2</span></div></header>
+<nav class="hw2-nav" aria-label="Control section">
+<div class="container hw2-nav-inner">
+<a class="hw2-home" href="../index.html#control">← Toolkit home</a>
+<span class="hw2-nav-sep" aria-hidden="true"></span>
+<a href="p1.html">P1 PID playground</a>
+<a href="p2.html">P2 Slow sensor</a>
+<a href="p3.html">P3 Digital PID</a>
+<a href="p4.html">P4 Tuning</a>
+<a href="mysystem.html" aria-current="page">My system</a>
+</div></nav>
+<main class="container">
+  <noscript><p class="noscript">JavaScript is needed to simulate your system and generate controller code.</p></noscript>
+  <section class="module" id="ms-root" aria-labelledby="ms-intro-title">
+    <article class="card intro">
+      <div>
+        <h2 id="ms-intro-title">Design a controller for your project plant</h2>
+        <p class="lead">Enter a first-order model measured from your project or taken from a cited datasheet. This page simulates a sampled PI/PID controller with RK4 and generates matching Arduino code.</p>
+        <div class="model-grid">
+          <div class="model-box"><span class="model-label">First-order plant</span><span class="math"><i>G</i>(<i>s</i>) = <i>K</i> / (<i>τs</i> + 1)</span></div>
+          <div class="model-box"><span class="model-label">Sampling and PWM</span><span class="math">0 ≤ <i>u</i>[<i>k</i>] ≤ 1</span></div>
+        </div>
+        <dl class="symbols"><div><dt>K</dt><dd>output gain / normalized PWM fraction</dd></div><div><dt>τ</dt><dd>time constant, seconds</dd></div><div><dt>T<sub>s</sub></dt><dd>digital sample interval, seconds</dd></div></dl>
+        <p class="assumption-line">The output and reference are normalized to the scale 0–1. The simulation uses zero-order hold, conditional anti-windup and the discrete PID equation from P3.</p>
+      </div>
+      <aside class="example">
+        <h3>How to identify your project model</h3>
+        <ol class="example-steps">
+          <li><span class="ex-time">1. Step input</span><span class="ex-temp">PWM</span><span class="ex-note">Apply a known step fraction and log the sensor response</span></li>
+          <li><span class="ex-time">2. Gain</span><span class="ex-temp">K</span><span class="ex-note">Change in normalized steady output / change in PWM fraction</span></li>
+          <li><span class="ex-time">3. Speed</span><span class="ex-temp">τ</span><span class="ex-note">Time to reach 63.2% of the measured output change</span></li>
+        </ol>
+        <p class="example-why">Alternatively, enter an actuator model from an actual datasheet and cite its URL or document details. No project-specific measurements have been supplied in this package.</p>
+      </aside>
+    </article>
+    <div class="workspace">
+      <section class="card controls" id="ms-controls">
+        <h2>Model, specifications and gains</h2>
+        <div class="controls-stack">
+          <div class="control-group">
+            <p class="control-group-title">Your project data</p>
+            <div class="field-stack"><label for="ms-project">Project / actuator name</label><input id="ms-project" type="text" value="Example first-order plant" maxlength="120"></div>
+            <div class="field-stack"><label for="ms-source">Measurement or datasheet source (required for submission)</label><textarea id="ms-source" placeholder="E.g. PWM step-test log dated ..., run ..., or datasheet title and URL"></textarea></div>
+            <div class="field-stack"><label for="ms-K">Plant gain K (output fraction per PWM fraction)</label><input id="ms-K" type="number" min="0.01" max="20" step="any" value="1" required></div>
+            <div class="field-stack"><label for="ms-tau">Time constant τ (s)</label><input id="ms-tau" type="number" min="0.01" max="25" step="any" value="1" required></div>
+            <p class="control-help">The default K = 1, τ = 1 s are demonstration values from the homework, <strong>not measured project data.</strong></p>
+          </div>
+          <div class="control-group">
+            <p class="control-group-title">Controller</p>
+            <div class="field-stack"><label for="ms-Ts">Sample time Tₛ (s)</label><input id="ms-Ts" type="number" min="0.005" max="0.5" step="any" value="0.02"></div>
+            <div class="field-stack"><label for="ms-r">Setpoint step (normalized 0–1)</label><input id="ms-r" type="number" min="0.05" max="1" step="any" value="0.5"></div>
+            <div class="field-stack"><label for="ms-Kp">Proportional Kp</label><input id="ms-Kp" type="number" min="0" max="30" step="any" value="1"></div>
+            <div class="field-stack"><label for="ms-Ki">Integral Ki</label><input id="ms-Ki" type="number" min="0" max="30" step="any" value="1"></div>
+            <div class="field-stack"><label for="ms-Kd">Derivative Kd</label><input id="ms-Kd" type="number" min="0" max="5" step="any" value="0"></div>
+            <label class="control-help"><input id="ms-aw" type="checkbox" checked> Enable conditional anti-windup</label>
+            <div class="preset-row"><button type="button" class="btn btn-sm" data-ms-preset="P">P only</button><button type="button" class="btn btn-sm" data-ms-preset="PI">PI</button><button type="button" class="btn btn-sm" data-ms-preset="PID">PID</button></div>
+          </div>
+          <div class="control-group">
+            <p class="control-group-title">Chosen performance spec</p>
+            <div class="field-stack"><label for="ms-spec-os">Maximum overshoot (%)</label><input id="ms-spec-os" type="number" min="0" max="100" step="any" value="10"></div>
+            <div class="field-stack"><label for="ms-spec-ts">Maximum settling time (s)</label><input id="ms-spec-ts" type="number" min="0.1" max="120" step="any" value="8"></div>
+            <div class="field-stack"><label for="ms-spec-ess">Maximum |final error| (%)</label><input id="ms-spec-ess" type="number" min="0" max="100" step="any" value="1"></div>
+            <div class="field-stack"><label for="ms-reason">Why this spec matters in your project</label><textarea id="ms-reason" placeholder="Explain why response speed and accuracy matter for the device"></textarea></div>
+            <p class="control-help">Adjust the limits to your actual motor/heater and explain their engineering purpose.</p>
+          </div>
+        </div>
+        <p class="input-error" id="ms-error" hidden role="alert"></p>
+      </section>
+      <div class="workspace-main">
+        <section class="card">
+          <div class="card-head"><div><h2>Project data and evidence</h2><p class="card-sub">A submission-ready model needs documented values, not just simulated defaults.</p></div><span class="chip" id="ms-source-chip">Example only</span></div>
+          <p class="project-warning" id="ms-warning"><strong>Demonstration data.</strong> Replace K, τ and the empty source field with your measured or cited project values before submitting.</p>
+          <p class="card-text" id="ms-model-text" style="margin-top:14px">G(s) = 1/(1s + 1)</p>
+          <p class="card-text" id="ms-source-text">Source: not provided</p>
+        </section>
+        <section class="card">
+          <div class="card-head"><div><h2>Control-loop block diagram</h2><p class="card-sub">Digital PID, limited PWM, and feedback from the output sensor.</p></div><span class="chip">0–100% PWM</span></div>
+          <div class="diagram-mobile" style="display:block">
+            <div class="diagram-flow">
+              <div class="diagram-step"><strong>Setpoint r[k]</strong>Error = r[k] − y[k]</div>
+              <div class="diagram-step"><strong>Digital PID</strong>Compute u[k] every Tₛ</div>
+              <div class="diagram-step"><strong>Limit + hold</strong>Clamp PWM to 0–100%</div>
+              <div class="diagram-step"><strong>First-order plant</strong>K / (τs + 1)</div>
+            </div><div class="diagram-feedback">↶ Sensor y[k] is sampled and returned through negative feedback</div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div><h2>Simulated closed-loop response</h2><p class="card-sub">Plant integration uses RK4 between controller samples. Compare the normalized output with the setpoint.</p></div><span class="chip" id="ms-sample-chip">Ts = 0.02 s</span></div>
+          <ul class="legend" id="ms-y-legend"></ul><div class="chart-box"><canvas id="ms-y-chart" role="img" aria-label="System response versus setpoint"></canvas><p data-chart-fallback class="chart-fallback" hidden>Response plot unavailable.</p></div>
+          <p class="chart-hint" id="ms-response-note">Output updates as you edit the plant and controller values.</p>
+        </section>
+        <section class="card">
+          <div class="card-head"><div><h2>Actuator PWM command</h2><p class="card-sub">Stair-step held command and normalized 0–1 actuator limits.</p></div><span class="chip" id="ms-limit-chip">0–100% PWM</span></div>
+          <ul class="legend" id="ms-u-legend"></ul><div class="chart-box chart-box--u"><canvas id="ms-u-chart" role="img" aria-label="Held PWM command"></canvas><p data-chart-fallback class="chart-fallback" hidden>Command plot unavailable.</p></div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div><h2>Performance and requirement checks</h2><p class="card-sub">Results compare with your own spec, not generic default limits.</p></div><span class="chip" id="ms-status-chip">Simulation</span></div>
+          <div class="metrics">
+            <article class="metric metric--tau"><h3>Rise time tᵣ</h3><p class="metric-value" id="ms-tr">—</p><p class="metric-note">10–90% of settled output</p></article>
+            <article class="metric metric--error"><h3>Overshoot Mₚ</h3><p class="metric-value" id="ms-mp">—</p><p class="metric-note">Percent of settled output</p></article>
+            <article class="metric metric--accent"><h3>Settling time tₛ</h3><p class="metric-value" id="ms-ts">—</p><p class="metric-note">Last exit from ±2% band</p></article>
+            <article class="metric"><h3>Steady-state error</h3><p class="metric-value" id="ms-ess">—</p><p class="metric-note">Percent of setpoint</p></article>
+          </div>
+          <div id="ms-spec-results" class="challenge-check" aria-live="polite"></div>
+        </section>
+        <section class="card" id="ms-predict">
+          <div class="card-head"><div><h2>Predict, then check</h2><p class="card-sub">Choose the expected behavior and verify it with a matching preset.</p></div><span class="chip" data-role="progress">Question 1 of 2</span></div>
+          <ol class="steps"><li data-step="predict">Predict</li><li data-step="check">Check</li><li data-step="observe">Observe</li></ol>
+          <fieldset class="predict-question"><legend data-role="prompt"></legend><div class="choices" data-role="choices"></div></fieldset>
+          <div class="predict-actions"><button class="btn btn-primary" type="button" data-role="check" disabled>Check prediction</button><button class="btn" type="button" data-role="retry" hidden>Try again</button><button class="btn" type="button" data-role="next" hidden>Next question</button><p class="predict-hint" data-role="hint">Choose your prediction first.</p></div>
+          <div class="feedback" data-role="feedback" tabindex="-1" hidden aria-live="polite"></div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div><h2>Generated Arduino code</h2><p class="card-sub">Uses the same discrete controller and conditional anti-windup equations as the plot.</p></div><button class="btn btn-primary" id="ms-copy" type="button">Copy code</button></div>
+          <p class="card-text">This is a normalized PWM example. Replace <code>readSensor()</code> and verify actuator wiring, calibration, sample timing and safe operating limits on your hardware.</p>
+          <pre class="pid-code"><code id="ms-code"></code></pre><p class="chart-hint" id="ms-copy-status" aria-live="polite"></p>
+        </section>
+        <section class="card">
+          <div class="card-head"><div><h2>Copy your project summary</h2><p class="card-sub">Includes the model, cited source text, requirements, final gains and measured simulation metrics.</p></div><button class="btn" type="button" id="ms-summary-copy">Copy summary</button></div>
+          <pre class="pid-code" style="background:var(--bg);color:var(--heading);white-space:pre-wrap;max-height:none"><code id="ms-summary"></code></pre>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container footer-inner"><p>ENCS4380 · Homework 2: PID Control Toolkit</p><p>Real project measurements and actuator calibration must be supplied by your group.</p></div></footer>
+<script src="chart.min.js"></script><script src="app.js"></script></body></html>

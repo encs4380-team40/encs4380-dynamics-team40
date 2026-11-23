@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-model="model4">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guess the sensor | ENCS4380</title>
+  <meta name="description" content="ENCS4380 Team 40 interactive toolkit for dynamic system characteristics and PID control.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Cpath d='M6 25C9 14 14 10 26 9' fill='none' stroke='%232dd4bf' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <!--
+    ENCS4380 Dynamic Characteristics Interactive Toolkit (one self-contained file)
+    Structure of this file:
+      Styles:   shell styles, then each module's styles scoped to its panel
+                (#module-1 ... #module-4; Modules 1 and 3 share one base)
+      Page:     header, module tabs, four panels (one module each), footer
+      Scripts:  Chart.js 4.4.1 (loaded once), navigation, shared helpers,
+                then one script per module, each wrapped in its own function
+  -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="tk-skip" href="#tk-main">Skip to the module</a>
+  <header class="tk-header">
+    <div class="tk-container tk-header-inner">
+      <p class="tk-course"><span class="tk-code">ENCS4380</span> — Interfacing Techniques</p>
+      <h1>Dynamic Characteristics Interactive Toolkit</h1>
+      <p class="tk-meta">Birzeit University · Dr. Wasel Ghanem</p>
+    </div>
+  </header>
+  <nav class="tk-nav" aria-label="Homework 1 modules">
+    <div class="tk-container">
+      <a class="tk-hw1-home" href="../index.html">← Toolkit home</a>
+      <div class="tk-tabs">
+      <a class="tk-tab" href="model1.html"><span class="tk-tab-num" aria-hidden="true">1</span><span class="tk-tab-long">First-order time response</span><span class="tk-tab-short">Time response</span></a>
+      <a class="tk-tab" href="model2.html"><span class="tk-tab-num" aria-hidden="true">2</span><span class="tk-tab-long">Frequency response</span><span class="tk-tab-short">Frequency response</span></a>
+      <a class="tk-tab" href="model3.html"><span class="tk-tab-num" aria-hidden="true">3</span><span class="tk-tab-long">Second order &amp; state space</span><span class="tk-tab-short">Second order</span></a>
+      <a class="tk-tab" href="model4.html" aria-current="page"><span class="tk-tab-num" aria-hidden="true">4</span><span class="tk-tab-long">Guess the sensor</span><span class="tk-tab-short">Guess the sensor</span></a>
+      </div>
+    </div>
+  </nav>
+  <main id="tk-main">
+    <section class="tk-panel" id="module-4">
+      <div class="tk-container tk-panel-head"><h2 class="tk-panel-title">Module 4 — Guess the Sensor Challenge</h2></div>
+      <div class="container" id="m4-root">
+
+    <p class="m4-lead">Read a noisy response curve and estimate the hidden sensor parameters. Predict first, then check your answer.</p>
+
+    <section class="card">
+      <div class="topline">
+        <div><strong id="m4-roundName">Loading sensor…</strong><p id="m4-roundHint" class="muted"></p></div>
+        <button id="m4-newBtn" class="secondary" type="button">New sensor</button>
+      </div>
+      <div id="m4-responsePlot" class="chart" role="img" aria-label="Noisy sensor response chart"></div>
+      <p class="muted small">The gray dots are measured samples. The dashed line (if present) is the known input. After your guess, the model curves appear.</p>
+    </section>
+
+    <section class="card">
+      <h2>Predict, then check</h2>
+      <p id="m4-question" class="muted"></p>
+      <form id="m4-guessForm">
+        <div id="m4-fields" class="fields"></div>
+        <div class="actions">
+          <button id="m4-checkBtn" type="submit">Check guess</button>
+          <button id="m4-hintBtn" class="secondary" type="button">Show hint</button>
+        </div>
+      </form>
+      <div id="m4-hintText" class="hint" hidden></div>
+      <div id="m4-result" class="result" hidden aria-live="polite"></div>
+    </section>
+
+    <section class="card scorebar">
+      <div><span class="muted">Rounds checked</span><strong id="m4-rounds">0</strong></div>
+      <div><span class="muted">Perfect rounds (all within 10%)</span><strong id="m4-perfect">0</strong></div>
+      <div><span class="muted">Total score</span><strong id="m4-total">0 / 0</strong></div>
+    </section>
+
+    <section class="card learn">
+      <h2>How to estimate the parameters</h2>
+      <p><strong>First-order step:</strong> Find the final output <em>KA</em>. For a unit step, K is the final output. The time at which the response first reaches 63.2% of the final change is approximately τ.</p>
+      <p><strong>First-order sine:</strong> Use the input and output phase shift to estimate τ = tan(|φ|)/ω; then K = output amplitude × √(1 + (ωτ)²) for a unit-amplitude sine.</p>
+      <p><strong>Second-order step:</strong> Use overshoot <em>OS</em> to estimate ζ, then peak time <em>tp</em> to estimate ωn. For the underdamped case: ζ = −ln(OS) / √(π² + ln²(OS)); ωn = π / (tp√(1 − ζ²)). Every second-order sensor in this challenge is underdamped, so the curve always has a peak to read.</p>
+      <p class="muted small">The noise is generated for display and is not used to evaluate the theoretical model curves.</p>
+    </section>
+      </div>
+    </section>
+  </main>
+  <footer class="tk-footer">
+    <div class="tk-container tk-footer-inner">
+      <p><strong>ENCS4380 Interfacing Techniques</strong> · Dynamic Characteristics Interactive Toolkit</p>
+      <p>Birzeit University, Dr. Wasel Ghanem. Team 40.</p>
+    </div>
+  </footer>
+<script src="app.js"></script>
+</body>
+</html>

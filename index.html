@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-model="home">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,8 +16,8 @@
       Scripts:  Chart.js 4.4.1 (loaded once), navigation, shared helpers,
                 then one script per module, each wrapped in its own function
   -->
-  <link rel="stylesheet" href="assets/site.css">
-  <script defer src="assets/app.js"></script>
+  <link rel="stylesheet" href="models/style.css">
+  <script defer src="models/app.js"></script>
 </head>
 <body>
   <a class="tk-skip" href="#tk-main">Skip to homework choices</a>
@@ -34,18 +34,18 @@
   <section class="tk-container" id="homework-picker" aria-label="Choose a homework">
     <h2>Choose a homework</h2>
     <div class="tk-homework-grid">
-      <article><h3>Homework 1 · Dynamic Characteristics</h3><p>Explore how sensors and systems respond to changing inputs. Try first-order time and frequency response, second-order dynamics and state space, and the Guess the Sensor challenge.</p><a class="tk-homework-open" href="modules/module1/module1.html">Choose Homework 1</a></article>
-      <article><h3>Homework 2 · PID Control</h3><p>Explore how feedback changes a system’s response. Tune PID gains, compare sensor lag and sampling times, and apply speed control to a micromouse motor.</p><a class="tk-homework-open" href="modules/p1/p1.html">Choose Homework 2</a></article>
+      <article><h3>Homework 1 · Dynamic Characteristics</h3><p>Explore how sensors and systems respond to changing inputs. Try first-order time and frequency response, second-order dynamics and state space, and the Guess the Sensor challenge.</p><a class="tk-homework-open" href="models/model1.html">Choose Homework 1</a></article>
+      <article><h3>Homework 2 · PID Control</h3><p>Explore how feedback changes a system’s response. Tune PID gains, compare sensor lag and sampling times, and apply speed control to a micromouse motor.</p><a class="tk-homework-open" href="models/p1.html">Choose Homework 2</a></article>
     </div>
   </section>
     <section id="control" class="tk-panel tk-container" aria-labelledby="control-title" hidden>
       <h2 id="control-title">Control · Homework 2</h2>
       <ul class="tk-tabs tk-control-links">
-        <li><a class="tk-tab" href="modules/p1/p1.html"><span class="tk-tab-num">P1</span><span>PID Playground</span></a></li>
-        <li><a class="tk-tab" href="modules/p2/p2.html"><span class="tk-tab-num">P2</span><span>Slow Sensor</span></a></li>
-        <li><a class="tk-tab" href="modules/p3/p3.html"><span class="tk-tab-num">P3</span><span>Digital PID</span></a></li>
-        <li><a class="tk-tab" href="modules/p4/p4.html"><span class="tk-tab-num">P4</span><span>Tuning Challenge</span></a></li>
-        <li><a class="tk-tab" href="modules/mysystem/mysystem.html"><span class="tk-tab-num">MS</span><span>My System</span></a></li>
+        <li><a class="tk-tab" href="models/p1.html"><span class="tk-tab-num">P1</span><span>PID Playground</span></a></li>
+        <li><a class="tk-tab" href="models/p2.html"><span class="tk-tab-num">P2</span><span>Slow Sensor</span></a></li>
+        <li><a class="tk-tab" href="models/p3.html"><span class="tk-tab-num">P3</span><span>Digital PID</span></a></li>
+        <li><a class="tk-tab" href="models/p4.html"><span class="tk-tab-num">P4</span><span>Tuning Challenge</span></a></li>
+        <li><a class="tk-tab" href="models/mysystem.html"><span class="tk-tab-num">MS</span><span>My System</span></a></li>
       </ul>
     </section>
   </main>

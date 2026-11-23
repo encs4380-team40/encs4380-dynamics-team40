@@ -72,7 +72,11 @@
       background: rgba(255, 255, 255, 0.97);
       border-top: 1px solid var(--tk-border); border-bottom: 1px solid var(--tk-border);
     }
-    .tk-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+    .tk-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+    #control { padding-block: 20px 36px; }
+    .tk-control-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; padding: 0; list-style: none; }
+    .tk-control-links a { display: block; padding: 16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; color: #0f766e; font-weight: 650; text-decoration: none; }
+    .tk-control-links a:hover, .tk-control-links a:focus-visible { border-color: #0f766e; text-decoration: underline; }
     .tk-tab {
       display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 10px 6px;
       background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
@@ -826,14 +830,15 @@
         <button type="button" class="tk-tab" role="tab" id="tab-module-2" aria-controls="module-2" aria-selected="false" tabindex="-1"><span class="tk-tab-num" aria-hidden="true">2</span><span class="tk-tab-long">Frequency response</span><span class="tk-tab-short">Frequency response</span></button>
         <button type="button" class="tk-tab" role="tab" id="tab-module-3" aria-controls="module-3" aria-selected="false" tabindex="-1"><span class="tk-tab-num" aria-hidden="true">3</span><span class="tk-tab-long">Second order &amp; state space</span><span class="tk-tab-short">Second order</span></button>
         <button type="button" class="tk-tab" role="tab" id="tab-module-4" aria-controls="module-4" aria-selected="false" tabindex="-1"><span class="tk-tab-num" aria-hidden="true">4</span><span class="tk-tab-long">Guess the sensor</span><span class="tk-tab-short">Guess the sensor</span></button>
+        <button type="button" class="tk-tab" role="tab" id="tab-control" aria-controls="control" aria-selected="false" tabindex="-1"><span class="tk-tab-num" aria-hidden="true">2</span><span>Homework 2</span></button>
       </div>
     </div>
   </nav>
 
   <main id="tk-main" tabindex="-1">
-    <section id="control" class="tk-container" aria-labelledby="control-title">
+    <section id="control" class="tk-panel tk-container" role="tabpanel" aria-labelledby="tab-control" hidden>
       <h2 id="control-title">Control · Homework 2</h2>
-      <ul>
+      <ul class="tk-control-links">
         <li><a href="modules/p1/p1.html">P1 — PID Playground</a></li>
         <li><a href="modules/p2/p2.html">P2 — Slow Sensor</a></li>
         <li><a href="modules/p3/p3.html">P3 — Digital PID</a></li>

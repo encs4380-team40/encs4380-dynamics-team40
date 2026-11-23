@@ -74,9 +74,10 @@
     }
     .tk-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
     #control { padding-block: 20px 36px; }
-    .tk-control-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; padding: 0; list-style: none; }
-    .tk-control-links a { display: block; padding: 16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; color: #0f766e; font-weight: 650; text-decoration: none; }
-    .tk-control-links a:hover, .tk-control-links a:focus-visible { border-color: #0f766e; text-decoration: underline; }
+    .tk-control-links { margin: 0; padding-left: 0; list-style: none; }
+    .tk-control-links .tk-tab { width: 100%; height: 100%; text-decoration: none; }
+    .tk-control-links .tk-tab:hover { border-bottom-color: var(--tk-accent); }
+    .tk-control-links .tk-tab:hover .tk-tab-num { background: var(--tk-accent); border-color: var(--tk-accent); color: #fff; }
     .tk-tab {
       display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 10px 6px;
       background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
@@ -838,12 +839,12 @@
   <main id="tk-main" tabindex="-1">
     <section id="control" class="tk-panel tk-container" role="tabpanel" aria-labelledby="tab-control" hidden>
       <h2 id="control-title">Control · Homework 2</h2>
-      <ul class="tk-control-links">
-        <li><a href="modules/p1/p1.html">P1 — PID Playground</a></li>
-        <li><a href="modules/p2/p2.html">P2 — Slow Sensor</a></li>
-        <li><a href="modules/p3/p3.html">P3 — Digital PID</a></li>
-        <li><a href="modules/p4/p4.html">P4 — Tuning Challenge</a></li>
-        <li><a href="modules/mysystem/mysystem.html">My System — Micromouse</a></li>
+      <ul class="tk-tabs tk-control-links">
+        <li><a class="tk-tab" href="modules/p1/p1.html"><span class="tk-tab-num">P1</span><span>PID Playground</span></a></li>
+        <li><a class="tk-tab" href="modules/p2/p2.html"><span class="tk-tab-num">P2</span><span>Slow Sensor</span></a></li>
+        <li><a class="tk-tab" href="modules/p3/p3.html"><span class="tk-tab-num">P3</span><span>Digital PID</span></a></li>
+        <li><a class="tk-tab" href="modules/p4/p4.html"><span class="tk-tab-num">P4</span><span>Tuning Challenge</span></a></li>
+        <li><a class="tk-tab" href="modules/mysystem/mysystem.html"><span class="tk-tab-num">MS</span><span>My System</span></a></li>
       </ul>
     </section>
     <noscript><div class="tk-container"><p class="tk-noscript">This toolkit needs JavaScript for its sliders, charts and activities.</p></div></noscript>
@@ -1740,7 +1741,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     'use strict';
     const nav = document.querySelector('.tk-nav');
     const header = document.querySelector('.tk-header');
-    const tabs = Array.from(document.querySelectorAll('.tk-tab'));
+    const tabs = Array.from(nav.querySelectorAll('.tk-tab'));
     const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
 
     function showModule(index, options = {}) {

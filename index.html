@@ -74,6 +74,15 @@
     }
     .tk-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
     #control { padding-block: 20px 36px; }
+    #homework-picker { padding-block: 22px; }
+    .tk-homework-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+    .tk-homework-grid article { background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; }
+    .tk-homework-grid h3 { margin-top: 0; }
+    .tk-homework-grid button { background: #0f766e; color: white; border: 0; border-radius: 6px; padding: 10px 14px; min-height: 44px; font: inherit; cursor: pointer; }
+    .tk-homework-grid button[aria-pressed="true"] { background: #134e4a; }
+    .tk-nav[hidden], .tk-nav .tk-tab[hidden] { display: none; }
+    .tk-nav .tk-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 767px) { .tk-nav .tk-tabs { grid-template-columns: 1fr 1fr; } }
     .tk-control-links { margin: 0; padding-left: 0; list-style: none; }
     .tk-control-links .tk-tab { width: 100%; height: 100%; text-decoration: none; }
     .tk-control-links .tk-tab:hover { border-bottom-color: var(--tk-accent); }
@@ -824,7 +833,14 @@
     </div>
   </header>
 
-  <nav class="tk-nav" aria-label="Toolkit modules">
+  <section class="tk-container" id="homework-picker" aria-label="Choose a homework">
+    <h2>Choose a homework</h2>
+    <div class="tk-homework-grid">
+      <article><h3>Homework 1 · Dynamic Characteristics</h3><p>Explore how sensors and systems respond to changing inputs. Try first-order time and frequency response, second-order dynamics and state space, and the Guess the Sensor challenge.</p><button type="button" data-homework="hw1">Choose Homework 1</button></article>
+      <article><h3>Homework 2 · PID Control</h3><p>Explore how feedback changes a system’s response. Tune PID gains, compare sensor lag and sampling times, and apply speed control to a micromouse motor.</p><button type="button" data-homework="hw2">Choose Homework 2</button></article>
+    </div>
+  </section>
+  <nav class="tk-nav" aria-label="Toolkit modules" hidden>
     <div class="tk-container">
       <div class="tk-tabs" role="tablist" aria-label="Modules">
         <button type="button" class="tk-tab" role="tab" id="tab-module-1" aria-controls="module-1" aria-selected="true" tabindex="0"><span class="tk-tab-num" aria-hidden="true">1</span><span class="tk-tab-long">First-order time response</span><span class="tk-tab-short">Time response</span></button>
@@ -852,7 +868,7 @@
     <!-- ==================================================================
          MODULE 1: FIRST-ORDER TIME RESPONSE
          ================================================================== -->
-    <section class="tk-panel" id="module-1" role="tabpanel" aria-labelledby="tab-module-1">
+    <section class="tk-panel" id="module-1" role="tabpanel" aria-labelledby="tab-module-1" hidden>
       <div class="tk-container tk-panel-head"><h2 class="tk-panel-title">Module 1 — First-Order Time Response</h2></div>
       <div class="container">
 
@@ -1744,7 +1760,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     const tabs = Array.from(nav.querySelectorAll('.tk-tab'));
     const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
 
+    const choices = Array.from(document.querySelectorAll('[data-homework]'));
+    const controlIndex = panels.findIndex(panel => panel.id === 'control');
+
     function showModule(index, options = {}) {
+      const homework = index === controlIndex ? 'hw2' : 'hw1';
+      nav.hidden = homework === 'hw2';
+      choices.forEach(choice => choice.setAttribute('aria-pressed', String(choice.dataset.homework === homework)));
       tabs.forEach((tab, i) => {
         const active = i === index;
         tab.setAttribute('aria-selected', String(active));
@@ -1771,6 +1793,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       return panels.findIndex((panel) => '#' + panel.id === window.location.hash);
     }
 
+    choices.forEach(choice => choice.addEventListener('click', () => {
+      showModule(choice.dataset.homework === 'hw2' ? controlIndex : 0, { updateHash: true });
+      panels.find(panel => !panel.hidden)?.scrollIntoView({block: 'nearest'});
+    }));
+    tabs[controlIndex].hidden = true;
+
     tabs.forEach((tab, i) => {
       tab.addEventListener('click', () => {
         showModule(i, { updateHash: true });
@@ -1778,10 +1806,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         if (window.scrollY > header.offsetHeight) window.scrollTo({ top: header.offsetHeight, behavior: 'auto' });
       });
       tab.addEventListener('keydown', (event) => {
-        const keys = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+        const moduleCount = tabs.length - 1;
+        const keys = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: moduleCount - 1 };
         if (!(event.key in keys)) return;
         event.preventDefault();
-        showModule((keys[event.key] + tabs.length) % tabs.length, { updateHash: true, focusTab: true });
+        showModule((keys[event.key] + moduleCount) % moduleCount, { updateHash: true, focusTab: true });
       });
     });
 
@@ -1800,7 +1829,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     measureNav();
 
     const initial = indexFromHash();
-    showModule(initial >= 0 ? initial : 0);
+    if (initial >= 0) showModule(initial);
+    else {
+      panels.forEach(panel => { panel.hidden = true; });
+      choices.forEach(choice => choice.setAttribute('aria-pressed', 'false'));
+    }
   })();
   </script>
   <script>

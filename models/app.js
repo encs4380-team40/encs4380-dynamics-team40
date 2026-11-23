@@ -6,11 +6,7 @@
       window.location.replace("models/model" + legacy[1] + ".html");
       return;
     }
-    const syncControl = () => {
-      document.getElementById("control").hidden = window.location.hash !== "#control";
-    };
-    window.addEventListener("hashchange", syncControl);
-    syncControl();
+    // The former #control link now opens the homework chooser.
     return;
   }
 
